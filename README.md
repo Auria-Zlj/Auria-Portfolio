@@ -92,4 +92,3 @@ For questions or support, please contact:
 ---
 
 **Note**: This is a template portfolio website. Make sure to replace all placeholder content with your actual information and project details.
-# Auria-Portfolio

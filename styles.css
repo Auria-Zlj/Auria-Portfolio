@@ -119,7 +119,7 @@ body {
 }
 
 .loading-screen .intro h2 {
-    font-size: clamp(1.8rem, 3vw, 2.2rem);
+    font-size: clamp(2.2rem, 4vw, 2.8rem);
     font-weight: 700;
     color: #2b2b2b;
     margin: 0;
@@ -132,15 +132,10 @@ body {
 
 .loading-screen .intro-line1 {
     opacity: 1;
-    animation: typewriter-fixed 3s steps(45, end) 1s forwards, hide-caret 0.01s 3.99s forwards;
+    animation: typewriter-fixed 4s steps(50, end) 1s forwards, hide-caret 0.01s 4.5s forwards;
 }
 
 .loading-screen .intro-line2 {
-    opacity: 0;
-    animation: typewriter-fixed 2s steps(20, end) 3.0s forwards, hide-caret 0.01s 4.5s forwards;
-}
-
-.loading-screen .intro p {
     font-size: clamp(0.9rem, 2vw, 1rem);
     color: #555;
     margin: 0.8rem 0 0 0;
@@ -150,7 +145,20 @@ body {
     border-right: 2px solid #555;
     white-space: nowrap;
     overflow: hidden;
-    animation: typewriter2 3s steps(50, end) 4.8s forwards, hide-caret 0.01s 7.5s forwards;
+    animation: typewriter-fixed 2.5s steps(40, end) 4.6s forwards, hide-caret 0.01s 6.5s forwards;
+}
+
+.loading-screen .intro-line3 {
+    font-size: clamp(0.9rem, 2vw, 1rem);
+    color: #555;
+    margin: 0;
+    font-family: "Courier New", monospace;
+    line-height: 1.5;
+    opacity: 0;
+    border-right: 2px solid #555;
+    white-space: nowrap;
+    overflow: hidden;
+    animation: typewriter-fixed 2s steps(25, end) 6.6s forwards, hide-caret 0.01s 8.5s forwards;
 }
 
 @keyframes slideUpReveal {
@@ -432,25 +440,25 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Card entrance animations - dissolve effect, clockwise from top */
-#card-ux {
-    animation: cardDissolve 1s ease-out 7.6s forwards;
-}
-
-#card-ui {
-    animation: cardDissolve 1s ease-out 8.0s forwards;
-}
-
-#card-ixd {
-    animation: cardDissolve 1s ease-out 8.4s forwards;
-}
-
+/* Card entrance animations - dissolve effect: bottom-left → top-left → top-center → top-right → bottom-right */
 #card-hard {
-    animation: cardDissolve 1s ease-out 8.8s forwards;
+    animation: cardDissolve 1s ease-out 8.6s forwards;
 }
 
 #card-dev {
-    animation: cardDissolve 1s ease-out 9.2s forwards;
+    animation: cardDissolve 1s ease-out 9.0s forwards;
+}
+
+#card-ux {
+    animation: cardDissolve 1s ease-out 9.4s forwards;
+}
+
+#card-ui {
+    animation: cardDissolve 1s ease-out 9.8s forwards;
+}
+
+#card-ixd {
+    animation: cardDissolve 1s ease-out 10.2s forwards;
 }
 
 @keyframes cardDissolve {
@@ -760,11 +768,22 @@ body {
 /* Card back question (h4) */
 .card-question {
     font-weight: 700;
-    font-size: clamp(0.95rem, 1.8vw, 1.02rem);
-    line-height: 1.25;
-    text-align: left;
+    font-size: clamp(1.1rem, 3vw, 1.4rem);
+    line-height: 1.2;
+    text-align: center;
     color: #333;
+    margin: 0 0 0.5rem 0;
+    font-family: "Courier New", monospace;
+}
+
+/* Card back subtitle (p) */
+.card-subtitle {
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+    color: #666;
     margin: 0;
+    text-align: center;
+    line-height: 1.3;
+    font-style: italic;
     font-family: "Courier New", monospace;
 }
 
@@ -808,7 +827,7 @@ body {
     transform: translateX(-50%) translateY(20px);
     z-index: 15;
     opacity: 0;
-    animation: buttonAppear 0.8s ease-out 9.8s forwards;
+    animation: buttonAppear 0.8s ease-out 10.9s forwards;
 }
 
 .loading-screen .hand-drawn-button {
