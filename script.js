@@ -67,6 +67,11 @@ window.addEventListener('load', () => {
     const loadingScreen = document.getElementById('loading-screen');
     const leftPupil = document.getElementById('leftPupil');
     const rightPupil = document.getElementById('rightPupil');
+    const heroWrapper = document.querySelector('.hero-wrapper');
+    const heroStage = document.querySelector('.hero-scale');
+    const landingNav = document.querySelector('.landing-nav');
+    const baseWidth = heroStage ? Number(heroStage.dataset.baseWidth) || heroStage.offsetWidth || 1440 : 1440;
+    const baseHeight = heroStage ? Number(heroStage.dataset.baseHeight) || heroStage.offsetHeight || 900 : 900;
     
     let eyeX = 0;
     
@@ -130,17 +135,17 @@ window.addEventListener('load', () => {
     ];
 
     const calculatePositions = () => {
-        if (!loadingScreen) return;
-        
-        const rect = loadingScreen.getBoundingClientRect();
-        const cx = rect.width / 2;
-        const cy = rect.height / 2;  // Dog in center of screen
-        const short = Math.min(rect.width, rect.height);
+        if (!heroStage) return;
+
+        const cx = baseWidth / 2;
+        const cy = baseHeight / 2;  // Dog in center of hero stage
+        const short = Math.min(baseWidth, baseHeight);
 
         // Dynamic radius adjustment based on screen size
-        const isSmallScreen = rect.width < 768;
-        const isMobile = rect.width < 480;
-        const isTinyScreen = rect.width < 360;
+        const viewportWidth = window.innerWidth;
+        const isSmallScreen = viewportWidth < 768;
+        const isMobile = viewportWidth < 480;
+        const isTinyScreen = viewportWidth < 360;
         
         // More aggressive radius reduction for smaller screens
         let radiusMultiplier;
@@ -171,10 +176,36 @@ window.addEventListener('load', () => {
         });
     };
 
-    // Calculate on load and resize
-    calculatePositions();
-    const resizeObserver = new ResizeObserver(calculatePositions);
-    resizeObserver.observe(loadingScreen);
+    const updateHeroScale = () => {
+        if (!heroStage || !heroWrapper) return;
+
+        const navHeight = landingNav ? landingNav.offsetHeight : 0;
+        heroWrapper.style.setProperty('--hero-nav-height', `${navHeight}px`);
+
+        const wrapperStyles = window.getComputedStyle(heroWrapper);
+        const paddingX = parseFloat(wrapperStyles.paddingLeft) + parseFloat(wrapperStyles.paddingRight);
+        const paddingY = parseFloat(wrapperStyles.paddingTop) + parseFloat(wrapperStyles.paddingBottom);
+
+        const availableWidth = Math.max(window.innerWidth - paddingX, 320);
+        const availableHeight = Math.max(window.innerHeight - paddingY, 320);
+        const scale = Math.min(availableWidth / baseWidth, availableHeight / baseHeight, 1);
+
+        heroStage.style.width = `${baseWidth}px`;
+        heroStage.style.height = `${baseHeight}px`;
+        heroStage.style.setProperty('--hero-scale', scale.toString());
+
+        calculatePositions();
+    };
+
+    updateHeroScale();
+    window.addEventListener('resize', updateHeroScale);
+    window.addEventListener('orientationchange', updateHeroScale);
+    if (typeof ResizeObserver !== 'undefined') {
+        const resizeObserver = new ResizeObserver(updateHeroScale);
+        if (heroWrapper) {
+            resizeObserver.observe(heroWrapper);
+        }
+    }
 
     // Button to navigate to home page
     const homeButton = document.getElementById('homeButton');
