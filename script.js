@@ -137,8 +137,16 @@ window.addEventListener('load', () => {
     const calculatePositions = () => {
         if (!heroStage) return;
 
-        const cx = baseWidth / 2;
-        const cy = baseHeight / 2;  // Dog in center of hero stage
+        // Get the dog-cards container
+        const dogCardsContainer = document.getElementById('dogCardsContainer');
+        if (!dogCardsContainer) {
+            console.warn('Dog-cards container not found');
+            return;
+        }
+
+        // Dog is always at the center of the dog-cards container
+        const cx = baseWidth / 2;   // 720px (center of 1440px width)
+        const cy = baseHeight / 2;  // 450px (center of 900px height)
         const short = Math.min(baseWidth, baseHeight);
 
         // Dynamic radius adjustment based on screen size
@@ -159,9 +167,14 @@ window.addEventListener('load', () => {
             radiusMultiplier = 1.0;  // Full size for desktop
         }
 
+        console.log(`Screen: ${viewportWidth}px, Radius multiplier: ${radiusMultiplier}`);
+
         nodes.forEach(node => {
             const card = document.getElementById(`card-${node.id}`);
-            if (!card) return;
+            if (!card) {
+                console.warn(`Card card-${node.id} not found`);
+                return;
+            }
 
             // Polar to Cartesian → card center with dynamic radius
             const adjustedRadius = node.radius * radiusMultiplier;
@@ -170,9 +183,34 @@ window.addEventListener('load', () => {
             const px = cx + Math.cos(angleRad) * rad;
             const py = cy + Math.sin(angleRad) * rad;
 
-            // Update card position
-            card.style.left = `${px}px`;
-            card.style.top = `${py}px`;
+            console.log(`Card ${node.id}: angle=${node.angle}°, radius=${adjustedRadius}, pos=(${px}, ${py})`);
+
+            // Clear only position-related inline styles, keep transform and opacity
+            card.style.removeProperty('left');
+            card.style.removeProperty('top');
+            
+            // Force reflow to ensure styles are cleared
+            card.offsetHeight;
+            
+            // Calculate offset from center of dog-cards-container
+            const offsetX = px - cx;  // Distance from center
+            const offsetY = py - cy;  // Distance from center
+            
+            // Set CSS custom properties for positioning
+            card.style.setProperty('--card-offset-x', `${offsetX}px`);
+            card.style.setProperty('--card-offset-y', `${offsetY}px`);
+            
+            // Use transform to position cards relative to container center
+            card.style.setProperty('left', '50%', 'important');
+            card.style.setProperty('top', '50%', 'important');
+            card.style.setProperty('transform', 'translate(calc(-50% + var(--card-offset-x)), calc(-50% + var(--card-offset-y))) scale(1)', 'important');
+            
+            // Ensure card is visible
+            if (card.style.opacity === '' || card.style.opacity === '0') {
+                card.style.opacity = '1';
+            }
+            
+            console.log(`Applied position to ${node.id}: left=${px}px, top=${py}px`);
         });
     };
 
@@ -206,6 +244,9 @@ window.addEventListener('load', () => {
             resizeObserver.observe(heroWrapper);
         }
     }
+
+    // Cards will appear naturally through CSS animations after text completes
+    // No need for immediate testing override - let the natural timing work
 
     // Button to navigate to home page
     const homeButton = document.getElementById('homeButton');

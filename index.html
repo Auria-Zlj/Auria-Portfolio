@@ -23,53 +23,48 @@
        
       <div class="hero-wrapper">
         <div class="hero-scale" data-base-width="1440" data-base-height="900">
-          <div class="dog" id="dog">
-            <!-- 垂耳 -->
-            <div class="ear left"></div>
-            <div class="ear right"></div>
+          <!-- Dog and Cards Container -->
+          <div class="dog-cards-container" id="dogCardsContainer">
+            <div class="dog" id="dog">
+              <!-- 垂耳 -->
+              <div class="ear left"></div>
+              <div class="ear right"></div>
 
-            <!-- 头（固定，不旋转） -->
-            <div class="head">
-              <!-- 眼睛 + 瞳孔追踪 -->
-              <div class="eye left">
-                <div class="pupil" id="leftPupil"></div>
-              </div>
-              <div class="eye right">
-                <div class="pupil" id="rightPupil"></div>
+              <!-- 头（固定，不旋转） -->
+              <div class="head">
+                <!-- 眼睛 + 瞳孔追踪 -->
+                <div class="eye left">
+                  <div class="pupil" id="leftPupil"></div>
+                </div>
+                <div class="eye right">
+                  <div class="pupil" id="rightPupil"></div>
+                </div>
+
+                <!-- 嘴口 + 鼻子轻"嗅" -->
+                <div class="snout">
+                  <div class="nose"></div>
+                </div>
               </div>
 
-              <!-- 嘴口 + 鼻子轻"嗅" -->
-              <div class="snout">
-                <div class="nose"></div>
+              <!-- 尾巴（在身体后面） -->
+              <div class="tail">
+                <div class="tail-seg"></div>
+                <div class="tail-tip"></div>
+              </div>
+
+              <!-- 身体 -->
+              <div class="body">
+                <div class="legs">
+                  <div class="leg"></div>
+                  <div class="leg"></div>
+                  <div class="leg"></div>
+                  <div class="leg"></div>
+                </div>
               </div>
             </div>
 
-            <!-- 尾巴（在身体后面） -->
-            <div class="tail">
-              <div class="tail-seg"></div>
-              <div class="tail-tip"></div>
-            </div>
-
-            <!-- 身体 -->
-            <div class="body">
-              <div class="legs">
-                <div class="leg"></div>
-                <div class="leg"></div>
-                <div class="leg"></div>
-                <div class="leg"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Intro Text -->
-          <div class="intro">
-            <h2 class="intro-line1">There's a dog behind everything I design.</h2>
-            <p class="intro-line2">It sniffs out what feels off, chases why it happens,</p>
-            <p class="intro-line3">and finds better ways forward.</p>
-          </div>
-
-          <!-- Skill Cards -->
-          <article class="radial-card" id="card-ux" data-id="ux" tabindex="0">
+            <!-- Skill Cards -->
+            <article class="radial-card" id="card-ux" data-id="ux" tabindex="0">
             <div class="card-inner">
               <div class="card-front">
                 <div class="card-icon">
@@ -158,6 +153,14 @@
               </div>
             </div>
           </article>
+          </div> <!-- End dog-cards-container -->
+
+          <!-- Intro Text -->
+          <div class="intro">
+            <h2 class="intro-line1">There's a dog behind everything I design.</h2>
+            <p class="intro-line2">It sniffs out what feels off, chases why it happens,</p>
+            <p class="intro-line3">and finds better ways forward.</p>
+          </div>
 
           <!-- Button to navigate to home page -->
           <div class="button-wrapper">
