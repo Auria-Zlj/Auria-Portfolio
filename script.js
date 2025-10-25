@@ -1,3 +1,22 @@
+// ========================================
+// PAGE STATE MANAGEMENT
+// ========================================
+
+// Page state management
+let pageMode = 'home'; // 'home' | 'projects'
+
+// DOM elements
+const projectsView = document.getElementById('projectsView');
+const dog = document.getElementById('dog');
+const lyingDog = document.getElementById('lyingDog');
+const leftPupilLying = document.getElementById('leftPupilLying'); // Lying dog pupils
+const rightPupilLying = document.getElementById('rightPupilLying');
+const sideOrbit = document.getElementById('sideOrbit');
+const card3d = document.getElementById('card3d');
+const projectsGrid = document.getElementById('projectsGrid');
+const whoBehind = document.getElementById('whoBehind');
+const homeButton = document.getElementById('homeButton');
+
 // Mobile Navigation Toggle
 const navToggle = document.getElementById('nav-toggle');
 const navMenu = document.getElementById('nav-menu');
@@ -6,6 +25,183 @@ navToggle.addEventListener('click', () => {
     navMenu.classList.toggle('active');
     navToggle.classList.toggle('active');
 });
+
+// ========================================
+// PAGE TRANSITION FUNCTIONS
+// ========================================
+
+// Switch to projects mode with animation timeline
+function switchToProjectsMode() {
+    if (pageMode === 'projects') return;
+    
+    pageMode = 'projects';
+    console.log('Switching to projects mode...');
+    
+    // Get landing page elements
+    const dogCardsContainer = document.getElementById('dogCardsContainer');
+    const intro = document.querySelector('.loading-screen .intro');
+    const buttonWrapper = document.querySelector('.button-wrapper');
+    const landingNav = document.querySelector('.landing-nav');
+    
+    console.log('Found elements:', {
+        dogCardsContainer: !!dogCardsContainer,
+        intro: !!intro,
+        buttonWrapper: !!buttonWrapper,
+        landingNav: !!landingNav
+    });
+    
+    // 0ms: Hide CTA button
+    homeButton.style.opacity = '0';
+    homeButton.style.pointerEvents = 'none';
+    
+    // 300ms: Start slide up animation for ALL landing page elements
+    setTimeout(() => {
+        if (dogCardsContainer) dogCardsContainer.classList.add('slide-up');
+        if (intro) intro.classList.add('slide-up');
+        if (buttonWrapper) buttonWrapper.classList.add('slide-up');
+        if (landingNav) landingNav.classList.add('slide-up');
+    }, 300);
+    
+    // 1800ms: Wait for landing page elements to fully slide up, then show projects view
+    setTimeout(() => {
+        projectsView.classList.add('active');
+    }, 1800);
+    
+    // 2000ms: Lying dog slides in from right
+    setTimeout(() => {
+        if (lyingDog) {
+            console.log('Adding slide-in class to lying dog');
+            lyingDog.classList.add('slide-in');
+            
+            // Start eye tracking for lying dog
+            startLyingDogEyeTracking();
+        } else {
+            console.log('Lying dog element not found!');
+        }
+    }, 2000);
+    
+    // 2500ms: Show 3D card ring and start rotation
+    setTimeout(() => {
+        sideOrbit.classList.add('active');
+        card3d.classList.add('run');
+    }, 2500);
+    
+    // 2800ms: Show projects grid with stagger
+    setTimeout(() => {
+        projectsGrid.classList.add('active');
+        animateProjectCards();
+    }, 2800);
+    
+    // 3000ms: Show who's behind section
+    setTimeout(() => {
+        whoBehind.classList.add('active');
+    }, 3000);
+}
+
+// Switch back to home mode
+function switchToHomeMode() {
+    if (pageMode === 'home') return;
+    
+    pageMode = 'home';
+    console.log('Switching to home mode...');
+    
+    // Get landing page elements
+    const dogCardsContainer = document.getElementById('dogCardsContainer');
+    const intro = document.querySelector('.loading-screen .intro');
+    const buttonWrapper = document.querySelector('.button-wrapper');
+    const landingNav = document.querySelector('.landing-nav');
+    
+    // Hide all projects view elements
+    projectsView.classList.remove('active');
+    if (lyingDog) lyingDog.classList.remove('slide-in');
+    sideOrbit.classList.remove('active');
+    card3d.classList.remove('run');
+    projectsGrid.classList.remove('active');
+    whoBehind.classList.remove('active');
+    
+    // Dog will be reset with the dog-cards-container
+    
+    // Reset landing page elements
+    if (dogCardsContainer) dogCardsContainer.classList.remove('slide-up');
+    if (intro) intro.classList.remove('slide-up');
+    if (buttonWrapper) buttonWrapper.classList.remove('slide-up');
+    if (landingNav) landingNav.classList.remove('slide-up');
+    
+    // Show CTA button
+    homeButton.style.opacity = '1';
+    homeButton.style.pointerEvents = 'auto';
+    
+    // Reset project cards
+    const projectCards = document.querySelectorAll('.project-card');
+    projectCards.forEach(card => {
+        card.classList.remove('animate-in');
+    });
+}
+
+// Animate project cards with stagger
+function animateProjectCards() {
+    const projectCards = document.querySelectorAll('.project-card');
+    projectCards.forEach((card, index) => {
+        setTimeout(() => {
+            card.classList.add('animate-in');
+        }, index * 60); // 60ms stagger
+    });
+}
+
+// Start eye tracking for lying dog
+function startLyingDogEyeTracking() {
+    if (!leftPupilLying || !rightPupilLying || !lyingDog) return;
+    
+    console.log('Starting lying dog eye tracking');
+    
+    const onMoveLying = (e) => {
+        const rect = lyingDog.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        
+        // Update both lying dog pupils
+        [leftPupilLying, rightPupilLying].forEach((pupil) => {
+            if (!pupil) return;
+            
+            const eyeRect = pupil.parentElement.getBoundingClientRect();
+            const centerX = eyeRect.left + eyeRect.width / 2 - rect.left;
+            const centerY = eyeRect.top + eyeRect.height / 2 - rect.top;
+            
+            // Mouse position relative to eye
+            const dx = mouseX - centerX;
+            const dy = mouseY - centerY;
+            
+            // Calculate angle
+            let angle = Math.atan2(dy, dx);
+            
+            // Limit angle range: -150° to +150°
+            const minAngle = (-150 * Math.PI) / 180;
+            const maxAngle = (150 * Math.PI) / 180;
+            
+            if (angle > maxAngle) angle = maxAngle;
+            if (angle < minAngle) angle = minAngle;
+            
+            // Maximum movement radius
+            const radius = 7;
+            
+            const moveX = Math.cos(angle) * radius;
+            const moveY = Math.sin(angle) * radius;
+            
+            pupil.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px))`;
+        });
+    };
+    
+    const onLeaveLying = () => {
+        if (leftPupilLying && rightPupilLying) {
+            leftPupilLying.style.transform = 'translate(-50%, -50%)';
+            rightPupilLying.style.transform = 'translate(-50%, -50%)';
+        }
+    };
+    
+    // Add event listeners to lying dog
+    lyingDog.addEventListener('mousemove', onMoveLying);
+    lyingDog.addEventListener('mouseleave', onLeaveLying);
+}
 
 // Close mobile menu when clicking on a link
 document.querySelectorAll('.nav-link').forEach(link => {
@@ -263,14 +459,11 @@ window.addEventListener('load', () => {
     // Cards will appear naturally through CSS animations after text completes
     // No need for immediate testing override - let the natural timing work
 
-    // Button to navigate to home page
-    const homeButton = document.getElementById('homeButton');
+    // Button to switch to projects mode
     if (homeButton) {
-        homeButton.addEventListener('click', () => {
-            loadingScreen.style.display = 'none';
-            // Clean up event listeners
-            loadingScreen.removeEventListener('mousemove', onMove);
-            loadingScreen.removeEventListener('mouseleave', onLeave);
+        homeButton.addEventListener('click', (e) => {
+            e.preventDefault(); // Prevent any default behavior
+            switchToProjectsMode();
         });
     }
 });
@@ -371,13 +564,68 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// ========================================
+// ACCESSIBILITY & KEYBOARD NAVIGATION
+// ========================================
+
 // Add keyboard navigation support
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         navMenu.classList.remove('active');
         navToggle.classList.remove('active');
+        
+        // If in projects mode, switch back to home
+        if (pageMode === 'projects') {
+            switchToHomeMode();
+        }
+    }
+    
+    // Space or Enter on home button
+    if ((e.key === ' ' || e.key === 'Enter') && e.target === homeButton) {
+        e.preventDefault();
+        switchToProjectsMode();
     }
 });
+
+// Add accessibility attributes
+function setupAccessibility() {
+    // Add ARIA labels and roles
+    if (sideOrbit) {
+        sideOrbit.setAttribute('aria-label', 'Interactive projects carousel (hover to pause)');
+        sideOrbit.setAttribute('role', 'region');
+        sideOrbit.setAttribute('tabindex', '0');
+    }
+    
+    if (card3d) {
+        card3d.setAttribute('aria-label', '3D rotating project cards');
+    }
+    
+    if (projectsGrid) {
+        projectsGrid.setAttribute('role', 'grid');
+        projectsGrid.setAttribute('aria-label', 'Project showcase grid');
+    }
+    
+    if (whoBehind) {
+        whoBehind.setAttribute('role', 'region');
+        whoBehind.setAttribute('aria-label', 'About the designer');
+    }
+    
+    // Add focus management for 3D card ring
+    if (sideOrbit) {
+        sideOrbit.addEventListener('focus', () => {
+            card3d.classList.remove('run');
+        });
+        
+        sideOrbit.addEventListener('blur', () => {
+            if (pageMode === 'projects') {
+                card3d.classList.add('run');
+            }
+        });
+    }
+}
+
+// Initialize accessibility
+setupAccessibility();
 
 // Performance optimization: Throttle scroll events
 function throttle(func, wait) {

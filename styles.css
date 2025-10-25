@@ -1834,3 +1834,573 @@ html {
         padding: clamp(0.8em, 2.3vw, 1em) clamp(1.2em, 3.3vw, 1.5em);
     }
 }
+
+/* ========================================
+   PAGE STATE MANAGEMENT & TRANSITIONS
+   ======================================== */
+
+/* Page State Management */
+body {
+    --page-mode: 'home'; /* Default to home mode */
+}
+
+/* Landing Page Elements Slide Up Animation */
+.dog-cards-container.slide-up {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) translateY(-100vh) !important;
+    transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+    z-index: 1000 !important;
+}
+
+.loading-screen .intro.slide-up {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) translateY(-100vh) !important;
+    transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+    z-index: 1000 !important;
+}
+
+.button-wrapper.slide-up {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) translateY(-100vh) !important;
+    transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+    z-index: 1000 !important;
+}
+
+/* Landing Page Title and Text Slide Up */
+.landing-nav.slide-up {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    transform: translateY(-100vh) !important;
+    transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+    z-index: 1000 !important;
+}
+
+/* Projects View */
+.projects-view {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: transparent;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(100vh);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    z-index: 20;
+}
+
+/* Lying Dog - Exact copy of landing page dog but lying down and bigger */
+.lying-dog {
+    position: fixed;
+    right: -200px;
+    bottom: 50px;
+    width: 180px;
+    height: 210px;
+    opacity: 1;
+    transform: translateX(0) rotate(-15deg) scale(1.3);
+    transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 15;
+}
+
+.lying-dog.slide-in {
+    right: 50px;
+    transform: translateX(0) rotate(-15deg) scale(1.3);
+}
+
+/* 趴着狗使用和landing page狗完全相同的样式，只是调整位置 */
+.lying-dog .ear {
+    position: absolute;
+    top: 22px;
+    width: 42px;
+    height: 74px;
+    background: #C9964B;
+    border-radius: 24px;
+    transform-origin: top center;
+    box-shadow: inset 0 -4px 0 rgba(0,0,0,.06);
+    animation: earSwing 2.4s ease-in-out infinite, idle 2.2s ease-in-out infinite;
+    z-index: 1;
+}
+
+.lying-dog .ear.left {
+    left: 20px;
+}
+
+.lying-dog .ear.right {
+    right: 20px;
+}
+
+.lying-dog .head {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    width: 116px;
+    height: 102px;
+    transform: translateX(-50%);
+    background: #E4B872;
+    border-radius: 60px;
+    z-index: 2;
+    box-shadow: inset 0 0 2px rgba(255,255,255,0.3), 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.lying-dog .eye {
+    position: absolute;
+    top: 30px;
+    width: 22px;
+    height: 25px;
+    background: #F1E5CC;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.lying-dog .eye.left {
+    left: 26px;
+}
+
+.lying-dog .eye.right {
+    right: 26px;
+}
+
+.lying-dog .pupil {
+    position: absolute;
+    top: 33%;
+    left: 50%;
+    width: 12px;
+    height: 12px;
+    background: #222;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.1s ease;
+}
+
+.lying-dog .snout {
+    position: absolute;
+    left: 50%;
+    bottom: 10px;
+    width: 64px;
+    height: 48px;
+    background: #F1E5CC;
+    border-radius: 28px;
+    transform: translateX(-50%);
+    z-index: 3;
+}
+
+.lying-dog .nose {
+    position: absolute;
+    left: 50%;
+    top: 8px;
+    width: 18px;
+    height: 12px;
+    border-radius: 8px;
+    background: #333;
+    transform: translateX(-50%);
+    animation: sniff 1.6s ease-in-out infinite;
+}
+
+.lying-dog .body {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140px;
+    height: 108px;
+    background: #D9A85E;
+    border-radius: 72px 72px 50px 50px;
+    z-index: 1;
+    animation: idle 2.2s ease-in-out infinite;
+}
+
+.lying-dog .legs {
+    position: absolute;
+    bottom: -12px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.lying-dog .leg {
+    width: 18px;
+    height: 43px;
+    background: #E4B872;
+    border-radius: 10px;
+    animation: idle 2.2s ease-in-out infinite;
+}
+
+.lying-dog .leg:nth-child(1) { animation-delay: -0.1s; }
+.lying-dog .leg:nth-child(2) { animation-delay: -0.2s; }
+.lying-dog .leg:nth-child(3) { animation-delay: -0.3s; }
+.lying-dog .leg:nth-child(4) { animation-delay: -0.4s; }
+
+.lying-dog .tail {
+    position: absolute;
+    right: -16px;
+    bottom: 32px;
+    width: 55px;
+    height: 18px;
+    background: linear-gradient(90deg, #d7a85b 0%, #b9823c 90%);
+    border-radius: 14px 20px 20px 14px;
+    transform-origin: left center;
+    animation: wag 1.6s ease-in-out infinite, idle 2.2s ease-in-out infinite;
+    z-index: 0;
+}
+
+.lying-dog .tail-seg,
+.lying-dog .tail-tip {
+    display: none;
+}
+
+.projects-view.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+/* Dog Animation States */
+.dog {
+    transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dog.dock-bottom-right {
+    position: fixed;
+    left: calc(100% - 80px);
+    top: calc(100% - 80px);
+    transform: translate(-50%, -50%) scale(0.6);
+    z-index: 100;
+    opacity: 1;
+    visibility: visible;
+}
+
+.dog.pose-compact {
+    /* Compact pose styles - can be sprite or CSS-based */
+}
+
+/* Side Orbit - 3D Card Ring */
+.side-orbit {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    height: 250px;
+    opacity: 0;
+    transition: all 0.6s ease;
+}
+
+.side-orbit.active {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.side-orbit.slide-up {
+    transform: translate(-50%, -50%) translateY(100vh) scale(0.8);
+    opacity: 0;
+}
+
+.card-3d {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transform: perspective(800px);
+    will-change: transform;
+}
+
+.card-3d.run {
+    animation: autoRun3d 20s linear infinite;
+}
+
+.card-item {
+    position: absolute;
+    width: 100px;
+    height: 140px;
+    background-color: rgb(199, 199, 199);
+    border: solid 2px lightgray;
+    border-radius: 0.5rem;
+    top: 50%;
+    left: 50%;
+    transform-origin: center center;
+    animation: animateBrightness 20s linear infinite;
+    transition-duration: 200ms;
+    will-change: transform, filter;
+}
+
+.card-3d:hover {
+    animation-play-state: paused !important;
+}
+
+.card-3d:hover .card-item {
+    animation-play-state: paused !important;
+}
+
+/* 3D Card Ring Animation */
+@keyframes autoRun3d {
+    from {
+        transform: perspective(800px) rotateY(-360deg);
+    }
+    to {
+        transform: perspective(800px) rotateY(0deg);
+    }
+}
+
+@keyframes animateBrightness {
+    10% {
+        filter: brightness(1);
+    }
+    50% {
+        filter: brightness(0.1);
+    }
+    90% {
+        filter: brightness(1);
+    }
+}
+
+/* Card Item Positions */
+.card-item:nth-child(1) {
+    transform: translate(-50%, -50%) rotateY(0deg) translateZ(200px);
+    animation-delay: -0s;
+}
+
+.card-item:nth-child(2) {
+    transform: translate(-50%, -50%) rotateY(36deg) translateZ(200px);
+    animation-delay: -2s;
+}
+
+.card-item:nth-child(3) {
+    transform: translate(-50%, -50%) rotateY(72deg) translateZ(200px);
+    animation-delay: -4s;
+}
+
+.card-item:nth-child(4) {
+    transform: translate(-50%, -50%) rotateY(108deg) translateZ(200px);
+    animation-delay: -6s;
+}
+
+.card-item:nth-child(5) {
+    transform: translate(-50%, -50%) rotateY(144deg) translateZ(200px);
+    animation-delay: -8s;
+}
+
+.card-item:nth-child(6) {
+    transform: translate(-50%, -50%) rotateY(180deg) translateZ(200px);
+    animation-delay: -10s;
+}
+
+.card-item:nth-child(7) {
+    transform: translate(-50%, -50%) rotateY(216deg) translateZ(200px);
+    animation-delay: -12s;
+}
+
+.card-item:nth-child(8) {
+    transform: translate(-50%, -50%) rotateY(252deg) translateZ(200px);
+    animation-delay: -14s;
+}
+
+.card-item:nth-child(9) {
+    transform: translate(-50%, -50%) rotateY(288deg) translateZ(200px);
+    animation-delay: -16s;
+}
+
+.card-item:nth-child(10) {
+    transform: translate(-50%, -50%) rotateY(324deg) translateZ(200px);
+    animation-delay: -18s;
+}
+
+/* Projects Grid */
+.projects-grid {
+    position: absolute;
+    left: 60px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: calc(100% - 500px);
+    max-width: 600px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.projects-grid.active {
+    opacity: 1;
+}
+
+.project-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.4s ease;
+}
+
+.project-card.animate-in {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.project-card h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.project-card p {
+    color: #666;
+    line-height: 1.6;
+}
+
+/* Who's Behind Section */
+.who-behind {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 30px 40px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+    transition: all 0.4s ease;
+}
+
+.who-behind.active {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.who-behind h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #333;
+}
+
+.who-behind p {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+.who-behind a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.who-behind a:hover {
+    text-decoration: underline;
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .card-3d.run {
+        animation: none;
+    }
+    
+    .card-item {
+        animation: none;
+    }
+    
+    .dog {
+        transition: none;
+    }
+    
+    .projects-view {
+        transition: opacity 0.2s ease;
+    }
+    
+    .project-card {
+        transition: opacity 0.2s ease;
+    }
+    
+    .who-behind {
+        transition: opacity 0.2s ease;
+    }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .side-orbit {
+        right: 20px;
+        width: 260px;
+        height: 140px;
+    }
+    
+    .card-item {
+        width: 60px;
+        height: 84px;
+    }
+    
+    .card-item:nth-child(1) {
+        transform: translate(-50%, -50%) rotateY(0deg) translateZ(90px);
+    }
+    
+    .card-item:nth-child(2) {
+        transform: translate(-50%, -50%) rotateY(36deg) translateZ(90px);
+    }
+    
+    .card-item:nth-child(3) {
+        transform: translate(-50%, -50%) rotateY(72deg) translateZ(90px);
+    }
+    
+    .card-item:nth-child(4) {
+        transform: translate(-50%, -50%) rotateY(108deg) translateZ(90px);
+    }
+    
+    .card-item:nth-child(5) {
+        transform: translate(-50%, -50%) rotateY(144deg) translateZ(90px);
+    }
+    
+    .card-item:nth-child(6) {
+        transform: translate(-50%, -50%) rotateY(180deg) translateZ(90px);
+    }
+    
+    .card-item:nth-child(7) {
+        transform: translate(-50%, -50%) rotateY(216deg) translateZ(90px);
+    }
+    
+    .card-item:nth-child(8) {
+        transform: translate(-50%, -50%) rotateY(252deg) translateZ(90px);
+    }
+    
+    .card-item:nth-child(9) {
+        transform: translate(-50%, -50%) rotateY(288deg) translateZ(90px);
+    }
+    
+    .card-item:nth-child(10) {
+        transform: translate(-50%, -50%) rotateY(324deg) translateZ(90px);
+    }
+    
+    .projects-grid {
+        left: 20px;
+        width: calc(100% - 320px);
+        gap: 20px;
+    }
+    
+    .project-card {
+        padding: 20px;
+    }
+    
+    .who-behind {
+        bottom: 20px;
+        padding: 20px 30px;
+    }
+    
+    .who-behind h2 {
+        font-size: 1.5rem;
+    }
+}

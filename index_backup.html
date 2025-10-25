@@ -21,50 +21,51 @@
          </div>
        </nav>
        
-    <div class="hero-wrapper">
+      <div class="hero-wrapper">
         <div class="hero-scale" data-base-width="1440" data-base-height="900">
-            <!-- Dog and Cards Container -->
-            <div class="dog-cards-container" id="dogCardsContainer">
-                    <div class="dog" id="dog">
-              <!-- 垂耳 -->
-              <div class="ear left"></div>
-              <div class="ear right"></div>
+          <div class="hero-layout-container">
+            <div class="dog" id="dog">
+            <!-- 垂耳 -->
+            <div class="ear left"></div>
+            <div class="ear right"></div>
 
-              <!-- 头（固定，不旋转） -->
-              <div class="head">
-                <!-- 眼睛 + 瞳孔追踪 -->
-                <div class="eye left">
-                  <div class="pupil" id="leftPupil"></div>
-                </div>
-                <div class="eye right">
-                  <div class="pupil" id="rightPupil"></div>
-                </div>
-
-                <!-- 嘴口 + 鼻子轻"嗅" -->
-                <div class="snout">
-                  <div class="nose"></div>
-                </div>
+            <!-- 头（固定，不旋转） -->
+            <div class="head">
+              <!-- 眼睛 + 瞳孔追踪 -->
+              <div class="eye left">
+                <div class="pupil" id="leftPupil"></div>
+              </div>
+              <div class="eye right">
+                <div class="pupil" id="rightPupil"></div>
               </div>
 
-              <!-- 尾巴（在身体后面） -->
-              <div class="tail">
-                <div class="tail-seg"></div>
-                <div class="tail-tip"></div>
-              </div>
-
-              <!-- 身体 -->
-              <div class="body">
-                <div class="legs">
-                  <div class="leg"></div>
-                  <div class="leg"></div>
-                  <div class="leg"></div>
-                  <div class="leg"></div>
-                </div>
+              <!-- 嘴口 + 鼻子轻"嗅" -->
+              <div class="snout">
+                <div class="nose"></div>
               </div>
             </div>
 
-            <!-- Skill Cards -->
-            <article class="radial-card" id="card-ux" data-id="ux" tabindex="0">
+            <!-- 尾巴（在身体后面） -->
+            <div class="tail">
+              <div class="tail-seg"></div>
+              <div class="tail-tip"></div>
+            </div>
+
+            <!-- 身体 -->
+            <div class="body">
+              <div class="legs">
+                <div class="leg"></div>
+                <div class="leg"></div>
+                <div class="leg"></div>
+                <div class="leg"></div>
+              </div>
+            </div>
+            </div>
+
+            <!-- Cards Container -->
+            <div class="cards-container">
+              <!-- Skill Cards -->
+              <article class="radial-card" id="card-ux" data-id="ux" tabindex="0">
             <div class="card-inner">
               <div class="card-front">
                 <div class="card-icon">
@@ -153,14 +154,6 @@
               </div>
             </div>
           </article>
-          </div> <!-- End dog-cards-container -->
-
-          <!-- Intro Text -->
-          <div class="intro">
-            <h2 class="intro-line1">There's a dog behind everything I design.</h2>
-            <p class="intro-line2">It sniffs out what feels off, chases why it happens,</p>
-            <p class="intro-line3">and finds better ways forward.</p>
-          </div>
 
           <!-- Button to navigate to home page -->
           <div class="button-wrapper">
@@ -198,91 +191,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Projects View (Projects Mode) -->
-      <div class="projects-view" id="projectsView">
-        <!-- New Lying Dog (Exact copy of landing page dog but lying down) -->
-        <div class="lying-dog" id="lyingDog">
-          <!-- 垂耳 -->
-          <div class="ear left"></div>
-          <div class="ear right"></div>
-
-          <!-- 头（固定，不旋转） -->
-          <div class="head">
-            <!-- 眼睛 + 瞳孔追踪 -->
-            <div class="eye left">
-              <div class="pupil" id="leftPupilLying"></div>
-            </div>
-            <div class="eye right">
-              <div class="pupil" id="rightPupilLying"></div>
-            </div>
-
-            <!-- 嘴口 + 鼻子轻"嗅" -->
-            <div class="snout">
-              <div class="nose"></div>
-            </div>
-          </div>
-
-          <!-- 尾巴（在身体后面） -->
-          <div class="tail">
-            <div class="tail-seg"></div>
-            <div class="tail-tip"></div>
-          </div>
-
-          <!-- 身体 -->
-          <div class="body">
-            <div class="legs">
-              <div class="leg"></div>
-              <div class="leg"></div>
-              <div class="leg"></div>
-              <div class="leg"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right Side 3D Card Ring -->
-        <div class="side-orbit" id="sideOrbit">
-          <div class="card-3d" id="card3d">
-            <div class="card-item"></div>
-            <div class="card-item"></div>
-            <div class="card-item"></div>
-            <div class="card-item"></div>
-            <div class="card-item"></div>
-            <div class="card-item"></div>
-            <div class="card-item"></div>
-            <div class="card-item"></div>
-            <div class="card-item"></div>
-            <div class="card-item"></div>
-          </div>
-        </div>
-
-        <!-- Projects Grid -->
-        <div class="projects-grid" id="projectsGrid">
-          <div class="project-card">
-            <h3>Project 1</h3>
-            <p>Description of project 1</p>
-          </div>
-          <div class="project-card">
-            <h3>Project 2</h3>
-            <p>Description of project 2</p>
-          </div>
-          <div class="project-card">
-            <h3>Project 3</h3>
-            <p>Description of project 3</p>
-          </div>
-          <div class="project-card">
-            <h3>Project 4</h3>
-            <p>Description of project 4</p>
-          </div>
-        </div>
-
-        <!-- Who's Behind Section -->
-        <div class="who-behind" id="whoBehind">
-          <h2>Who's behind the fetch?</h2>
-          <p>Designer + builder. I think with my hands and ship what I test.</p>
-          <p>Contact: <a href="mailto:contact@auria.com">contact@auria.com</a></p>
-        </div>
-      </div> <!-- End Projects View -->
      </div>
 
    <!-- Navigation -->
