@@ -18,34 +18,32 @@ Portfolio/
 ├── index.html          # Main HTML file
 ├── styles.css          # CSS styles and responsive design
 ├── script.js           # JavaScript for interactivity
-├── assets/             # Images and media files
-│   ├── my-notion-face-transparent.png
-│   ├── macbook-pro-14.png
-│   ├── mushroom-project.png
-│   ├── iphone-expedia.png
-│   ├── x-heal-project.png
-│   └── profile-image.png
+├── image/              # Dog and UI images
+│   ├── headIcon.png    # Profile icon
+│   ├── dog-nose.png    # Dog nose icon
+│   ├── footprint.png   # Footprint icon
+│   ├── loadingdog2.png # Loading dog animation
+│   ├── show.png        # Show icon
+│   ├── toy.png         # Toy icon
+│   ├── toys.png        # Toys icon
+│   └── treat.png       # Treat icon
+├── assets/             # Additional assets
+│   └── placeholder-generator.html
 └── README.md           # This file
 ```
 
 ## Getting Started
 
 1. **Clone or download** this repository
-2. **Add your images** to the `assets/` directory:
-   - `my-notion-face-transparent.png` - Your profile picture (40x40px recommended)
-   - `macbook-pro-14.png` - ClariMe project screenshot
-   - `mushroom-project.png` - MushRoommate project image
-   - `iphone-expedia.png` - Expedia redesign screenshot
-   - `x-heal-project.png` - X-Heal project image
-   - `profile-image.png` - About section profile image
+2. **Open `index.html`** in your web browser to view the website
 
-3. **Customize the content**:
-   - Update personal information in `index.html`
-   - Modify project descriptions and details
-   - Update contact information and social links
-   - Replace placeholder images with your actual project screenshots
+## Features
 
-4. **Open `index.html`** in your web browser to view the website
+- **Interactive Dog Character**: Mouse-tracking eyes and smooth animations
+- **Responsive Card Layout**: Cards that follow the dog during screen scaling
+- **Dynamic Scaling**: Perfect behavior across all device sizes
+- **Modern Design**: Clean, professional portfolio layout
+- **Smooth Animations**: CSS transitions and JavaScript interactions
 
 ## Customization
 
