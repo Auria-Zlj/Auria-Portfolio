@@ -224,13 +224,28 @@ window.addEventListener('load', () => {
         const paddingX = parseFloat(wrapperStyles.paddingLeft) + parseFloat(wrapperStyles.paddingRight);
         const paddingY = parseFloat(wrapperStyles.paddingTop) + parseFloat(wrapperStyles.paddingBottom);
 
-        const availableWidth = Math.max(window.innerWidth - paddingX, 320);
-        const availableHeight = Math.max(window.innerHeight - paddingY, 320);
+        const availableWidth = Math.max(window.innerWidth - paddingX, 240);
+        const availableHeight = Math.max(window.innerHeight - paddingY, 240);
         const scale = Math.min(availableWidth / baseWidth, availableHeight / baseHeight, 1);
+        
+        // Increase scale for small screens
+        const viewportWidth = window.innerWidth;
+        const isVerySmallScreen = viewportWidth < 480;
+        const isSmallScreen = viewportWidth < 768;
+        const isTinyScreen = viewportWidth < 360;
+        
+        let adjustedScale = scale;
+        if (isTinyScreen) {
+            adjustedScale = Math.min(scale * 2.2, 1); // 120% larger for tiny screens
+        } else if (isVerySmallScreen) {
+            adjustedScale = Math.min(scale * 2.0, 1); // 100% larger for very small screens
+        } else if (isSmallScreen) {
+            adjustedScale = Math.min(scale * 1.6, 1); // 60% larger for small screens
+        }
 
         heroStage.style.width = `${baseWidth}px`;
         heroStage.style.height = `${baseHeight}px`;
-        heroStage.style.setProperty('--hero-scale', scale.toString());
+        heroStage.style.setProperty('--hero-scale', adjustedScale.toString());
 
         calculatePositions();
     };
