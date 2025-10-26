@@ -601,6 +601,128 @@ document.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('load', () => {
     // 初始化自适应
     adaptAllElements();
+
+    // Particles (hero-only) - non-blocking background, reduced-motion aware
+    (function initParticles() {
+        const canvas = document.getElementById('particlesCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        let rafId = null;
+        let particles = [];
+        let width = 0, height = 0;
+        let reduced = false;
+
+        const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+        const updateReduced = () => { reduced = mq.matches; };
+        updateReduced();
+        if (mq.addEventListener) mq.addEventListener('change', updateReduced);
+        else if (mq.addListener) mq.addListener(updateReduced);
+
+        function resize() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            width = Math.max(1, Math.floor(rect.width));
+            height = Math.max(1, Math.floor(rect.height));
+            canvas.width = Math.floor(width * dpr);
+            canvas.height = Math.floor(height * dpr);
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            buildParticles();
+            if (reduced) drawStatic();
+        }
+
+        function getQuantity() {
+            const w = window.innerWidth;
+            if (w < 480) return 60; // mobile 50–80
+            if (w < 768) return 100; // tablet 80–120
+            return 140; // desktop 120–160
+        }
+
+        function buildParticles() {
+            const qty = getQuantity();
+            particles = new Array(qty).fill(0).map(() => {
+                const x = Math.random() * width;
+                const y = Math.random() * height;
+                const size = 0.5 + Math.random() * 0.3; // 0.5–0.8
+                const staticity = 60 + Math.random() * 20; // 60–80
+                const ease = 45 + Math.random() * 15; // 45–60
+                const vx = (Math.random() * 0.03 + 0.02) * (Math.random() < 0.5 ? -1 : 1);
+                const vy = (Math.random() * 0.03 + 0.02) * (Math.random() < 0.5 ? -1 : 1);
+                return { x, y, r: size, s: staticity, e: ease, vx, vy };
+            });
+        }
+
+        function getColor() {
+            // Try CSS vars; fallback subtle gray
+            const styles = getComputedStyle(document.documentElement);
+            const fg = styles.getPropertyValue('--foreground') || styles.getPropertyValue('--color-fg');
+            const bg = styles.getPropertyValue('--background') || styles.getPropertyValue('--color-bg');
+            // Pick mid-tone depending on body bg lightness heuristic
+            const bodyBg = getComputedStyle(document.body).backgroundColor;
+            let useLight = true;
+            if (bodyBg) {
+                // crude luminance check
+                const m = bodyBg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+                if (m) {
+                    const r = +m[1], g = +m[2], b = +m[3];
+                    const L = 0.2126*r + 0.7152*g + 0.0722*b;
+                    useLight = L < 140;
+                }
+            }
+            const picked = (useLight ? (fg || '#ffffff') : (bg || '#666666')).trim();
+            return picked || (useLight ? '#ffffff' : '#666666');
+        }
+
+        function clear() {
+            ctx.clearRect(0, 0, width, height);
+        }
+
+        function drawStatic() {
+            clear();
+            ctx.globalAlpha = 0.15;
+            ctx.fillStyle = getColor();
+            particles.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        function step() {
+            clear();
+            ctx.globalAlpha = 0.12;
+            ctx.fillStyle = getColor();
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                // gentle drift
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.x < -10) p.x = width + 10; else if (p.x > width + 10) p.x = -10;
+                if (p.y < -10) p.y = height + 10; else if (p.y > height + 10) p.y = -10;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            rafId = requestAnimationFrame(step);
+        }
+
+        const onVisibility = () => {
+            if (document.hidden) {
+                if (rafId) cancelAnimationFrame(rafId);
+                rafId = null;
+            } else if (!reduced) {
+                if (!rafId) rafId = requestAnimationFrame(step);
+            }
+        };
+
+        // init
+        resize();
+        const ro = new ResizeObserver(() => resize());
+        ro.observe(canvas.parentElement);
+        document.addEventListener('visibilitychange', onVisibility);
+        if (!reduced) rafId = requestAnimationFrame(step);
+    })();
     
     const loadingScreen = document.getElementById('loading-screen');
     const leftPupil = document.getElementById('leftPupil');
