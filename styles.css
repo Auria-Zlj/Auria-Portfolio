@@ -1969,18 +1969,68 @@ body {
 .lying-dog {
     position: fixed;
     right: -200px;
-    bottom: 50px;
+    bottom: 80px;
     width: 180px;
     height: 210px;
     opacity: 1;
     transform: translateX(0) rotate(-15deg) scale(1.3);
     transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    z-index: 15;
+    z-index: 5; /* 降低z-index，让卡片和按钮在上面 */
+}
+
+/* 眼珠子在中间停半秒，然后左右左，每个停0.2秒，最后回到中间 */
+@keyframes eyeLookAround {
+    0% {
+        transform: translate(-50%, -50%) translate(0, 0);
+    }
+    20% {
+        transform: translate(-50%, -50%) translate(0, 0);
+    }
+    35% {
+        transform: translate(-50%, -50%) translate(-8px, 0);
+    }
+    45% {
+        transform: translate(-50%, -50%) translate(-8px, 0);
+    }
+    60% {
+        transform: translate(-50%, -50%) translate(8px, 0);
+    }
+    70% {
+        transform: translate(-50%, -50%) translate(8px, 0);
+    }
+    85% {
+        transform: translate(-50%, -50%) translate(-8px, 0);
+    }
+    95% {
+        transform: translate(-50%, -50%) translate(-8px, 0);
+    }
+    100% {
+        transform: translate(-50%, -50%) translate(0, 0);
+    }
+}
+
+/* 新狗从右边滑出来的动画 */
+@keyframes dogSlideIn {
+    0% {
+        right: -200px;
+        transform: translateX(0) rotate(-15deg) scale(1.3);
+    }
+    100% {
+        right: clamp(20px, 5vw, 60px);
+        transform: translateX(0) rotate(-15deg) scale(1.3);
+    }
 }
 
 .lying-dog.slide-in {
-    right: 50px;
+    right: -200px; /* 初始位置在屏幕外 */
+    bottom: 50px; /* 固定在底部右下角 */
     transform: translateX(0) rotate(-15deg) scale(1.3);
+    animation: dogSlideIn 1s ease-out 0.5s forwards;
+}
+
+/* 眼珠子在狗滑出来后开始左右左，每个停0.2秒，最后回到中间 */
+.lying-dog.slide-in .pupil {
+    animation: eyeLookAround 2.5s ease-in-out 1.5s;
 }
 
 /* 趴着狗使用和landing page狗完全相同的样式，只是调整位置 */
@@ -2154,18 +2204,19 @@ body {
 .side-orbit {
     position: absolute;
     left: 50%;
-    top: 50%;
+    top: 45%; /* 向上移动一点，给下方留空间 */
     transform: translate(-50%, -50%) translateY(100vh);
     width: 600px;
     height: 300px;
     opacity: 0;
     transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     --card-distance: 250px;
+    z-index: 10; /* 确保在lying-dog上面 */
 }
 
 .side-orbit.active {
     opacity: 1;
-    transform: translate(-50%, -50%) translateY(0) scale(1);
+    transform: translate(-50%, -45%) translateY(0) scale(1); /* 对应top: 45% */
 }
 
 .side-orbit.slide-up {
@@ -2328,12 +2379,14 @@ body {
 /* Who's Behind Section - Button Style */
 .who-behind {
     position: absolute;
-    bottom: 80px;
+    bottom: clamp(120px, 20vh, 180px); /* 增加bottom，为新狗留空间 */
     left: 50%;
     transform: translateX(-50%) translateY(100vh);
     text-align: center;
     opacity: 0;
     transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 20; /* 确保在最上面 */
+    pointer-events: auto;
 }
 
 .who-behind.active {

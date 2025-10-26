@@ -26,28 +26,24 @@ function adaptLyingDogSize() {
     if (!lyingDog) return;
     
     const screenWidth = window.innerWidth;
-    let dogSize, scale;
+    let scale;
     
+    // 使用base尺寸180x210，通过scale实现自适应
     if (screenWidth < 480) {
         // Small screens
-        dogSize = { width: 120, height: 140 };
-        scale = 0.67; // 120/180
+        scale = 0.4 * 1.3; // 更小，避免遮挡
     } else if (screenWidth < 768) {
         // Medium screens
-        dogSize = { width: 150, height: 175 };
-        scale = 0.83; // 150/180
+        scale = 0.65 * 1.3;
     } else {
         // Large screens
-        dogSize = { width: 180, height: 210 };
-        scale = 1.0;
+        scale = 1.0 * 1.3;
     }
     
-    // Apply size and scale
-    lyingDog.style.width = `${dogSize.width}px`;
-    lyingDog.style.height = `${dogSize.height}px`;
-    lyingDog.style.transform = `translateX(0) rotate(-15deg) scale(${scale * 1.3})`;
+    // Apply scale only, keep base dimensions in CSS
+    lyingDog.style.transform = `translateX(0) rotate(-15deg) scale(${scale})`;
     
-    console.log(`Lying dog adapted: ${dogSize.width}x${dogSize.height}, scale: ${scale}`);
+    console.log(`Lying dog adapted: scale ${scale}`);
 }
 
 // Responsive adaptation for 3D cards
@@ -58,15 +54,16 @@ function adaptCardsSize() {
     let containerSize, cardSize, cardDistance;
     
     if (screenWidth < 480) {
-        // Small screens
-        containerSize = { width: 300, height: 150 };
-        cardSize = { width: 200, height: 130 };
-        cardDistance = 150;
+        // Small screens - 更小的卡片和间距
+        containerSize = { width: screenWidth * 0.85, height: (screenWidth * 0.85) * 0.5 };
+        cardSize = { width: 50, height: 70 };
+        // 减小间距到20%，避免overlap
+        cardDistance = containerSize.width * 0.2;
     } else if (screenWidth < 768) {
         // Medium screens
-        containerSize = { width: 450, height: 225 };
-        cardSize = { width: 280, height: 180 };
-        cardDistance = 200;
+        containerSize = { width: 480, height: 280 };
+        cardSize = { width: 100, height: 140 };
+        cardDistance = containerSize.width * 0.25;
     } else {
         // Large screens
         containerSize = { width: 600, height: 300 };
@@ -79,14 +76,38 @@ function adaptCardsSize() {
     sideOrbit.style.height = `${containerSize.height}px`;
     sideOrbit.style.setProperty('--card-distance', `${cardDistance}px`);
     
-    // Apply card sizes
+    // Apply card sizes and font sizes
     const cards = document.querySelectorAll('.card-item');
     cards.forEach(card => {
         card.style.width = `${cardSize.width}px`;
         card.style.height = `${cardSize.height}px`;
+        
+        // 根据卡片大小调整字体大小
+        const cardContent = card.querySelector('.card-content');
+        if (cardContent) {
+            const h3 = cardContent.querySelector('h3');
+            const p = cardContent.querySelector('p');
+            
+            if (screenWidth < 480) {
+                // 小屏幕，更小的字体
+                if (h3) h3.style.fontSize = '10px';
+                if (p) p.style.fontSize = '8px';
+                card.style.padding = '8px';
+            } else if (screenWidth < 768) {
+                // 中等屏幕
+                if (h3) h3.style.fontSize = '14px';
+                if (p) p.style.fontSize = '11px';
+                card.style.padding = '12px';
+            } else {
+                // 大屏幕
+                if (h3) h3.style.fontSize = '18px';
+                if (p) p.style.fontSize = '14px';
+                card.style.padding = '20px';
+            }
+        }
     });
     
-    console.log(`Cards adapted: container ${containerSize.width}x${containerSize.height}, cards ${cardSize.width}x${cardSize.height}`);
+    console.log(`Cards adapted: container ${containerSize.width}x${containerSize.height}, cards ${cardSize.width}x${cardSize.height}, distance ${cardDistance}px`);
 }
 
 // Responsive adaptation for button
@@ -227,9 +248,9 @@ function switchToProjectsMode() {
                     });
                 });
             });
-        }, 300);
+        }, 0);
     
-    // 600ms: Then slide up the dog
+    // 300ms后开始狗的slide up
     setTimeout(() => {
         if (dog) {
             console.log('Processing dog:', dog.id);
@@ -266,9 +287,9 @@ function switchToProjectsMode() {
                 });
             });
         }
-    }, 600);
+    }, 300);
     
-    // 900ms: Finally slide up the text and button
+    // 600ms后开始文字和按钮的slide up
     setTimeout(() => {
         // 处理intro文字
         if (intro) {
@@ -352,14 +373,14 @@ function switchToProjectsMode() {
         if (landingNav) {
             console.log('Landing nav stays sticky at top - no slide up animation');
         }
-    }, 900);
+    }, 600);
     
     // 1800ms: Wait for landing page elements to fully slide up, then show projects view
     setTimeout(() => {
         projectsView.classList.add('active');
     }, 1800);
     
-    // 2000ms: Lying dog slides in from right FIRST
+    // 1200ms: Lying dog slides in from right FIRST (faster)
     setTimeout(() => {
         if (lyingDog) {
             console.log('Adding slide-in class to lying dog');
@@ -375,9 +396,9 @@ function switchToProjectsMode() {
         } else {
             console.log('Lying dog element not found!');
         }
-    }, 2000);
+    }, 1200);
     
-    // 2800ms: Show 3D card ring and start rotation (after dog appears)
+    // 4000ms: Show 3D card ring and start rotation (after dog slides in and eyes complete sequence)
     setTimeout(() => {
         sideOrbit.classList.add('active');
         card3d.classList.add('run');
@@ -386,9 +407,9 @@ function switchToProjectsMode() {
         setTimeout(() => {
             adaptCardsSize();
         }, 100);
-    }, 2800);
+    }, 4000);
     
-    // 3200ms: Show who's behind section (slide up from bottom)
+    // 4200ms: Show who's behind section (slide up from bottom)
     setTimeout(() => {
         whoBehind.classList.add('active');
         
@@ -396,7 +417,7 @@ function switchToProjectsMode() {
         setTimeout(() => {
             adaptButtonSize();
         }, 100);
-    }, 3200);
+    }, 4200);
 }
 
 // Switch back to home mode
@@ -578,6 +599,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Loading screen control with optimized pupil tracking
 window.addEventListener('load', () => {
+    // 初始化自适应
+    adaptAllElements();
+    
     const loadingScreen = document.getElementById('loading-screen');
     const leftPupil = document.getElementById('leftPupil');
     const rightPupil = document.getElementById('rightPupil');
