@@ -602,6 +602,23 @@ window.addEventListener('load', () => {
     // 初始化自适应
     adaptAllElements();
 
+    // Parallax for particles background layer (lightweight, no interference)
+    (function initParticleParallax() {
+        let rafId = null;
+        const root = document.documentElement;
+        
+        window.addEventListener('mousemove', (e) => {
+            if (rafId !== null) return;
+            rafId = requestAnimationFrame(() => {
+                const nx = (e.clientX / window.innerWidth) * 2 - 1;  // [-1, 1]
+                const ny = (e.clientY / window.innerHeight) * 2 - 1; // [-1, 1]
+                root.style.setProperty('--mx', nx.toFixed(3));
+                root.style.setProperty('--my', ny.toFixed(3));
+                rafId = null;
+            });
+        });
+    })();
+
     // Particles (hero-only) - non-blocking background, reduced-motion aware
     (function initParticles() {
         const canvas = document.getElementById('particlesCanvas');
@@ -620,9 +637,9 @@ window.addEventListener('load', () => {
         else if (mq.addListener) mq.addListener(updateReduced);
 
         function resize() {
-            const rect = canvas.parentElement.getBoundingClientRect();
-            width = Math.max(1, Math.floor(rect.width));
-            height = Math.max(1, Math.floor(rect.height));
+            // Always use viewport dimensions for full-screen particles
+            width = Math.max(1, Math.floor(window.innerWidth));
+            height = Math.max(1, Math.floor(window.innerHeight));
             canvas.width = Math.floor(width * dpr);
             canvas.height = Math.floor(height * dpr);
             canvas.style.width = width + 'px';
@@ -634,9 +651,9 @@ window.addEventListener('load', () => {
 
         function getQuantity() {
             const w = window.innerWidth;
-            if (w < 480) return 60; // mobile 50–80
-            if (w < 768) return 100; // tablet 80–120
-            return 140; // desktop 120–160
+            if (w < 480) return 80; // mobile 50–80
+            if (w < 768) return 120; // tablet 80–120
+            return 160; // desktop 120–160
         }
 
         function buildParticles() {
@@ -644,7 +661,7 @@ window.addEventListener('load', () => {
             particles = new Array(qty).fill(0).map(() => {
                 const x = Math.random() * width;
                 const y = Math.random() * height;
-                const size = 0.5 + Math.random() * 0.3; // 0.5–0.8
+                const size = 1.5 + Math.random() * 0.8; // 1.5–2.3 (larger for better visibility)
                 const staticity = 60 + Math.random() * 20; // 60–80
                 const ease = 45 + Math.random() * 15; // 45–60
                 const vx = (Math.random() * 0.03 + 0.02) * (Math.random() < 0.5 ? -1 : 1);
@@ -670,8 +687,8 @@ window.addEventListener('load', () => {
                     useLight = L < 140;
                 }
             }
-            const picked = (useLight ? (fg || '#ffffff') : (bg || '#666666')).trim();
-            return picked || (useLight ? '#ffffff' : '#666666');
+            // Use light orange for particles with better visibility
+            return 'rgba(246, 136, 19, 1.0)'; // light orange fully opaque for clarity
         }
 
         function clear() {
@@ -680,7 +697,7 @@ window.addEventListener('load', () => {
 
         function drawStatic() {
             clear();
-            ctx.globalAlpha = 0.15;
+            ctx.globalAlpha = 0.6; // more visible for static mode
             ctx.fillStyle = getColor();
             particles.forEach(p => {
                 ctx.beginPath();
@@ -689,10 +706,19 @@ window.addEventListener('load', () => {
             });
         }
 
+        let mouseX = 0, mouseY = 0;
+        const onMouseMove = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+        };
+        canvas.addEventListener('mousemove', onMouseMove);
+
         function step() {
             clear();
-            ctx.globalAlpha = 0.12;
+            ctx.globalAlpha = 0.6; // more visible
             ctx.fillStyle = getColor();
+            const influenceRadius = 100;
             for (let i = 0; i < particles.length; i++) {
                 const p = particles[i];
                 // gentle drift
@@ -700,6 +726,17 @@ window.addEventListener('load', () => {
                 p.y += p.vy;
                 if (p.x < -10) p.x = width + 10; else if (p.x > width + 10) p.x = -10;
                 if (p.y < -10) p.y = height + 10; else if (p.y > height + 10) p.y = -10;
+                
+                // mouse influence (subtle attraction/repulsion)
+                const dx = mouseX - p.x;
+                const dy = mouseY - p.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < influenceRadius && dist > 0) {
+                    const force = (influenceRadius - dist) / influenceRadius * 0.15;
+                    p.x += (dx / dist) * force;
+                    p.y += (dy / dist) * force;
+                }
+                
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
                 ctx.fill();
@@ -718,8 +755,8 @@ window.addEventListener('load', () => {
 
         // init
         resize();
-        const ro = new ResizeObserver(() => resize());
-        ro.observe(canvas.parentElement);
+        // Listen to window resize instead of parent element
+        window.addEventListener('resize', resize);
         document.addEventListener('visibilitychange', onVisibility);
         if (!reduced) rafId = requestAnimationFrame(step);
     })();
