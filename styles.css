@@ -33,7 +33,7 @@ body {
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .hero-wrapper {
@@ -46,7 +46,7 @@ body {
     align-items: center;
     padding: calc(var(--hero-nav-height, 70px) + 8px) clamp(2px, 0.5vw, 40px) clamp(4px, 1vh, 64px);
     box-sizing: border-box;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .hero-scale {
@@ -57,9 +57,21 @@ body {
     transform: scale(var(--hero-scale, 1));
 }
 
-/* Landing Page Navigation */
+/* 隐藏的屏幕中心参考线 */
+.screen-center-line {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    width: 0;
+    height: 100vh;
+    transform: translateX(-50%);
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0;
+    /* 调试时可以设置 opacity: 0.1; background: red; 来看到这条线 */
+}
 .landing-nav {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -1849,16 +1861,41 @@ body {
     position: fixed !important;
     top: 50% !important;
     left: 50% !important;
-    transform: translate(-50%, -50%) translateY(-100vh) !important;
+    transform: translate(-50%, -50%) translateY(-150vh) !important;
     transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
     z-index: 1000 !important;
 }
 
-.loading-screen .intro.slide-up {
+/* Individual Card Slide Up Animation */
+.dog-cards-container .radial-card.slide-up,
+.radial-card.slide-up {
     position: fixed !important;
     top: 50% !important;
     left: 50% !important;
-    transform: translate(-50%, -50%) translateY(-100vh) !important;
+    transform: translate(-50%, calc(-50% - 150vh)) !important;
+    transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+    z-index: 1000 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    animation: none !important;
+    filter: none !important;
+}
+
+/* Dog Slide Up Animation */
+.dog.slide-up {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) translateY(-150vh) !important;
+    transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+    z-index: 1000 !important;
+}
+
+.intro.slide-up {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translateX(-10%) translateY(-150vh) !important;
     transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
     z-index: 1000 !important;
 }
@@ -1867,7 +1904,7 @@ body {
     position: fixed !important;
     top: 50% !important;
     left: 50% !important;
-    transform: translate(-50%, -50%) translateY(-100vh) !important;
+    transform: translateX(-50%) translateY(calc(20px - 150vh)) !important;
     transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
     z-index: 1000 !important;
 }
@@ -1877,9 +1914,39 @@ body {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
-    transform: translateY(-100vh) !important;
+    transform: translateY(-150vh) !important;
     transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
     z-index: 1000 !important;
+}
+
+/* Intro Text Lines Slide Up */
+.loading-screen .intro.slide-up .intro-line1,
+.loading-screen .intro.slide-up .intro-line2,
+.loading-screen .intro.slide-up .intro-line3 {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) translateY(-150vh) !important;
+    transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+    z-index: 1000 !important;
+    animation: none !important;
+    clip-path: none !important;
+    opacity: 1 !important;
+}
+
+/* Force slide up for intro text lines - more specific selectors */
+.loading-screen .intro.slide-up h2.intro-line1,
+.loading-screen .intro.slide-up p.intro-line2,
+.loading-screen .intro.slide-up p.intro-line3 {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) translateY(-150vh) !important;
+    transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+    z-index: 1000 !important;
+    animation: none !important;
+    clip-path: none !important;
+    opacity: 1 !important;
 }
 
 /* Projects View */
@@ -1894,7 +1961,8 @@ body {
     pointer-events: none;
     transform: translateY(100vh);
     transition: opacity 0.6s ease, transform 0.6s ease;
-    z-index: 20;
+    z-index: 2000;
+    overflow-y: auto; /* Allow scrolling within the projects view */
 }
 
 /* Lying Dog - Exact copy of landing page dog but lying down and bigger */
@@ -2082,21 +2150,22 @@ body {
     /* Compact pose styles - can be sprite or CSS-based */
 }
 
-/* Side Orbit - 3D Card Ring */
+/* Side Orbit - 3D Card Ring - Centered and Responsive */
 .side-orbit {
     position: absolute;
     left: 50%;
     top: 50%;
-    transform: translate(-50%, -50%);
-    width: 500px;
-    height: 250px;
+    transform: translate(-50%, -50%) translateY(100vh);
+    width: 600px;
+    height: 300px;
     opacity: 0;
-    transition: all 0.6s ease;
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --card-distance: 250px;
 }
 
 .side-orbit.active {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+    transform: translate(-50%, -50%) translateY(0) scale(1);
 }
 
 .side-orbit.slide-up {
@@ -2119,17 +2188,42 @@ body {
 
 .card-item {
     position: absolute;
-    width: 100px;
-    height: 140px;
-    background-color: rgb(199, 199, 199);
-    border: solid 2px lightgray;
-    border-radius: 0.5rem;
+    width: 320px;
+    height: 200px;
+    background-color: rgba(255, 255, 255, 0.95);
+    border: solid 2px #e0e0e0;
+    border-radius: 12px;
     top: 50%;
     left: 50%;
     transform-origin: center center;
     animation: animateBrightness 20s linear infinite;
     transition-duration: 200ms;
     will-change: transform, filter;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.card-content {
+    text-align: center;
+    color: #333;
+}
+
+.card-content h3 {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0 0 12px 0;
+    color: #2b2b2b;
+}
+
+.card-content p {
+    font-size: 14px;
+    margin: 0;
+    color: #666;
+    line-height: 1.4;
 }
 
 .card-3d:hover {
@@ -2164,73 +2258,44 @@ body {
 
 /* Card Item Positions */
 .card-item:nth-child(1) {
-    transform: translate(-50%, -50%) rotateY(0deg) translateZ(200px);
+    transform: translate(-50%, -50%) rotateY(0deg) translateZ(var(--card-distance));
     animation-delay: -0s;
 }
 
 .card-item:nth-child(2) {
-    transform: translate(-50%, -50%) rotateY(36deg) translateZ(200px);
-    animation-delay: -2s;
+    transform: translate(-50%, -50%) rotateY(90deg) translateZ(var(--card-distance));
+    animation-delay: -5s;
 }
 
 .card-item:nth-child(3) {
-    transform: translate(-50%, -50%) rotateY(72deg) translateZ(200px);
-    animation-delay: -4s;
-}
-
-.card-item:nth-child(4) {
-    transform: translate(-50%, -50%) rotateY(108deg) translateZ(200px);
-    animation-delay: -6s;
-}
-
-.card-item:nth-child(5) {
-    transform: translate(-50%, -50%) rotateY(144deg) translateZ(200px);
-    animation-delay: -8s;
-}
-
-.card-item:nth-child(6) {
-    transform: translate(-50%, -50%) rotateY(180deg) translateZ(200px);
+    transform: translate(-50%, -50%) rotateY(180deg) translateZ(var(--card-distance));
     animation-delay: -10s;
 }
 
-.card-item:nth-child(7) {
-    transform: translate(-50%, -50%) rotateY(216deg) translateZ(200px);
-    animation-delay: -12s;
-}
-
-.card-item:nth-child(8) {
-    transform: translate(-50%, -50%) rotateY(252deg) translateZ(200px);
-    animation-delay: -14s;
-}
-
-.card-item:nth-child(9) {
-    transform: translate(-50%, -50%) rotateY(288deg) translateZ(200px);
-    animation-delay: -16s;
-}
-
-.card-item:nth-child(10) {
-    transform: translate(-50%, -50%) rotateY(324deg) translateZ(200px);
-    animation-delay: -18s;
+.card-item:nth-child(4) {
+    transform: translate(-50%, -50%) rotateY(270deg) translateZ(var(--card-distance));
+    animation-delay: -15s;
 }
 
 /* Projects Grid */
 .projects-grid {
     position: absolute;
-    left: 60px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: calc(100% - 500px);
-    max-width: 600px;
+    left: 50%;
+    top: 60%;
+    transform: translateX(-50%) translateY(100vh);
+    width: 80%;
+    max-width: 800px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 30px;
     padding: 20px;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .projects-grid.active {
     opacity: 1;
+    transform: translateX(-50%) translateY(0);
 }
 
 .project-card {
@@ -2260,21 +2325,15 @@ body {
     line-height: 1.6;
 }
 
-/* Who's Behind Section */
+/* Who's Behind Section - Button Style */
 .who-behind {
     position: absolute;
-    bottom: 40px;
+    bottom: 80px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateY(100vh);
     text-align: center;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 30px 40px;
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
     opacity: 0;
-    transform: translateX(-50%) translateY(20px);
-    transition: all 0.4s ease;
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .who-behind.active {
@@ -2282,27 +2341,64 @@ body {
     transform: translateX(-50%) translateY(0);
 }
 
-.who-behind h2 {
-    font-size: 1.8rem;
-    font-weight: 600;
-    margin-bottom: 16px;
-    color: #333;
+/* Button wrapper for who-behind section */
+.who-behind .button-wrapper {
+    position: relative;
+    display: inline-block;
 }
 
-.who-behind p {
-    color: #666;
-    line-height: 1.6;
-    margin-bottom: 8px;
+/* Hand-drawn button for who-behind section */
+.who-behind .hand-drawn-button {
+    text-align: center;
+    transition: 0.3s ease-in-out;
+    cursor: pointer;
+    background-color: transparent;
+    filter: url(#handDrawnNoise2);
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+    font-family: "Courier New", monospace;
+    font-size: clamp(0.9rem, 2.2vw, 1.3rem);
+    font-weight: bold;
+    color: #2b2b2b;
+    border: none;
+    padding: clamp(0.7em, 2vw, 0.9em) clamp(1.2em, 3vw, 1.5em);
+    position: relative;
+    overflow: hidden;
 }
 
-.who-behind a {
-    color: #007bff;
-    text-decoration: none;
-    font-weight: 500;
+.who-behind .hand-drawn-button:hover {
+    transform: scale(1.05);
+    filter: url(#handDrawnNoise2) brightness(1.1);
 }
 
-.who-behind a:hover {
-    text-decoration: underline;
+.who-behind .hand-drawn-button:active {
+    transform: scale(0.98);
+}
+
+.who-behind .button-cosm {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+.who-behind .highlight {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    stroke: #ff914d;
+    stroke-width: 17;
+    fill: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.who-behind .hand-drawn-button:hover .highlight {
+    opacity: 0.8;
 }
 
 /* Reduced Motion Support */
@@ -2402,5 +2498,42 @@ body {
     
     .who-behind h2 {
         font-size: 1.5rem;
+    }
+    
+    /* Ensure slide-up elements stay hidden on mobile */
+    .dog-cards-container.slide-up {
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, calc(-50% - 150vh)) !important;
+        transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+        z-index: 1000 !important;
+    }
+    
+    .loading-screen .intro.slide-up {
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) translateY(-100vh) !important;
+        transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+        z-index: 1000 !important;
+    }
+    
+    .button-wrapper.slide-up {
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) translateY(-100vh) !important;
+        transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+        z-index: 1000 !important;
+    }
+    
+    .landing-nav.slide-up {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        transform: translateY(-100vh) !important;
+        transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+        z-index: 1000 !important;
     }
 }
