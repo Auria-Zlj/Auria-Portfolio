@@ -182,7 +182,7 @@ body {
 
 .loading-screen .intro-line1 {
     opacity: 1;
-    animation: typewriter-fixed 4s steps(50, end) 1s forwards, hide-caret 0.01s 4.5s forwards;
+    animation: typewriter-fixed 2s steps(50, end) 1s forwards, hide-caret 0.01s 2.5s forwards;
 }
 
 .loading-screen .intro-line2 {
@@ -195,7 +195,7 @@ body {
     border-right: 2px solid #555;
     white-space: nowrap;
     overflow: hidden;
-    animation: typewriter-fixed 2.5s steps(40, end) 4.6s forwards, hide-caret 0.01s 6.5s forwards;
+    animation: typewriter-fixed 2.5s steps(40, end) 3.0s forwards, hide-caret 0.01s 5.0s forwards;
 }
 
 .loading-screen .intro-line3 {
@@ -208,7 +208,7 @@ body {
     border-right: 2px solid #555;
     white-space: nowrap;
     overflow: hidden;
-    animation: typewriter-fixed 2s steps(25, end) 6.6s forwards, hide-caret 0.01s 8.5s forwards;
+    animation: typewriter-fixed 2s steps(25, end) 5.0s forwards, hide-caret 0.01s 7.0s forwards;
 }
 
 @keyframes slideUpReveal {
@@ -499,23 +499,23 @@ body {
 /* Card entrance animations - dissolve effect: bottom-left → top-left → top-center → top-right → bottom-right */
 /* Cards appear after text animation completes (around 8.5s) */
 #card-hard {
-    animation: cardDissolve 1s ease-out 9.0s forwards;
+    animation: cardDissolve 1s ease-out 7.2s forwards;
 }
 
 #card-dev {
-    animation: cardDissolve 1s ease-out 9.4s forwards;
+    animation: cardDissolve 1s ease-out 7.3s forwards;
 }
 
 #card-ux {
-    animation: cardDissolve 1s ease-out 9.8s forwards;
+    animation: cardDissolve 1s ease-out 7.4s forwards;
 }
 
 #card-ui {
-    animation: cardDissolve 1s ease-out 10.2s forwards;
+    animation: cardDissolve 1s ease-out 7.5s forwards;
 }
 
 #card-ixd {
-    animation: cardDissolve 1s ease-out 10.6s forwards;
+    animation: cardDissolve 1s ease-out 7.6s forwards;
 }
 
 @keyframes cardDissolve {
@@ -886,7 +886,7 @@ body {
     transform: translateX(-50%) translateY(20px);
     z-index: 15;
     opacity: 0;
-    animation: buttonAppear 0.8s ease-out 10.9s forwards;
+    animation: buttonAppear 0.8s ease-out 7.8s forwards;
 }
 
 .loading-screen .hand-drawn-button {
