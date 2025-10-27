@@ -26,24 +26,53 @@ function adaptLyingDogSize() {
     if (!lyingDog) return;
     
     const screenWidth = window.innerWidth;
-    let scale;
+    const screenHeight = window.innerHeight;
+    let scale, bottomPos, rightPos;
     
     // 使用base尺寸180x210，通过scale实现自适应
-    if (screenWidth < 480) {
-        // Small screens
-        scale = 0.4 * 1.3; // 更小，避免遮挡
+    // 始终保持在右下角
+    if (screenWidth < 360) {
+        scale = 0.3; // 超小屏
+        bottomPos = '15px';
+        rightPos = '8px';
+    } else if (screenWidth < 480) {
+        scale = 0.4; // 小屏
+        bottomPos = '20px';
+        rightPos = '10px';
     } else if (screenWidth < 768) {
-        // Medium screens
-        scale = 0.65 * 1.3;
+        scale = screenHeight < 700 ? 0.55 : 0.6; // 中屏，高度矮时更小
+        bottomPos = screenHeight < 700 ? '25px' : '35px';
+        rightPos = screenHeight < 700 ? '12px' : '18px';
+    } else if (screenHeight < 600) {
+        scale = 0.65; // 高度矮的时候缩小
+        bottomPos = '30px';
+        rightPos = '20px';
+    } else if (screenHeight < 700) {
+        scale = 0.75; // 稍微矮的时候
+        bottomPos = '35px';
+        rightPos = '25px';
+    } else if (screenHeight < 900) {
+        scale = 1.2; // 正常大屏，稍微放大
+        bottomPos = '50px';
+        rightPos = '30px';
     } else {
-        // Large screens
-        scale = 1.0 * 1.3;
+        scale = 1.5; // 超大屏，更大
+        bottomPos = '60px';
+        rightPos = '40px';
     }
     
-    // Apply scale only, keep base dimensions in CSS
-    lyingDog.style.transform = `translateX(0) rotate(-15deg) scale(${scale})`;
+    // Apply scale using CSS variable so animation works correctly
+    lyingDog.style.setProperty('--dog-scale', scale);
     
-    console.log(`Lying dog adapted: scale ${scale}`);
+    // Also set direct transform for non-animated state
+    lyingDog.style.transform = `translateX(0) rotate(-15deg) scale(${scale})`;
+    lyingDog.style.transformOrigin = 'center center';
+    
+    // Always apply position to keep dog in bottom-right corner
+    lyingDog.style.bottom = bottomPos;
+    lyingDog.style.right = rightPos;
+    
+    console.log(`Lying dog adapted: scale ${scale}, --dog-scale=${scale}, position bottom:${bottomPos} right:${rightPos}, screen ${screenWidth}x${screenHeight}`);
 }
 
 // Responsive adaptation for 3D cards
@@ -110,22 +139,115 @@ function adaptCardsSize() {
     console.log(`Cards adapted: container ${containerSize.width}x${containerSize.height}, cards ${cardSize.width}x${cardSize.height}, distance ${cardDistance}px`);
 }
 
+// Responsive adaptation for chapter cards
+function adaptChapterCardsSize() {
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    const chapterCards = document.querySelectorAll('.chapter-card');
+    const chapters = document.querySelector('.chapters');
+    
+    chapterCards.forEach(card => {
+        if (screenWidth < 320) {
+            card.style.width = '90px';
+            card.style.height = '60px';
+        } else if (screenWidth < 360) {
+            card.style.width = '100px';
+            card.style.height = '67px';
+        } else if (screenWidth < 480) {
+            card.style.width = '120px';
+            card.style.height = '80px';
+        } else if (screenWidth < 768) {
+            card.style.width = '240px';
+            card.style.height = '160px';
+        } else {
+            card.style.width = '';
+            card.style.height = '';
+        }
+        
+        // Adjust cover height
+        const cover = card.querySelector('.card-cover');
+        if (cover) {
+            if (screenWidth < 320) {
+                cover.style.height = '35px';
+            } else if (screenWidth < 360) {
+                cover.style.height = '40px';
+            } else if (screenWidth < 480) {
+                cover.style.height = '50px';
+            } else if (screenWidth < 768) {
+                cover.style.height = '100px';
+            } else {
+                cover.style.height = '';
+            }
+        }
+    });
+    
+    // Adjust track gap
+    const track = document.querySelector('.chapters-track');
+    if (track) {
+        if (screenWidth < 320) {
+            track.style.gap = '6px';
+            track.style.padding = '0';
+        } else if (screenWidth < 360) {
+            track.style.gap = '8px';
+            track.style.padding = '0';
+        } else if (screenWidth < 480) {
+            track.style.gap = '10px';
+            track.style.padding = '0';
+        } else if (screenWidth < 768) {
+            track.style.gap = '60px';
+            track.style.padding = '';
+        } else {
+            track.style.gap = '100px';
+            track.style.padding = '';
+        }
+    }
+    
+    // Adjust chapters container based on height to prevent overlap
+    if (chapters) {
+        if (screenHeight < 600) {
+            // Very short screen - reduce container height and move up
+            chapters.style.top = '10%';
+            chapters.style.height = '200px';
+        } else if (screenHeight < 700) {
+            // Short screen
+            chapters.style.top = '12%';
+            chapters.style.height = '280px';
+        } else if (screenWidth < 480) {
+            chapters.style.top = '12%';
+            chapters.style.height = '380px';
+        } else if (screenWidth < 768) {
+            chapters.style.top = '15%';
+            chapters.style.height = '420px';
+        } else {
+            chapters.style.top = '';
+            chapters.style.height = '';
+        }
+    }
+    
+    console.log(`Chapter cards adapted for screen ${screenWidth}x${screenHeight}px`);
+}
+
 // Responsive adaptation for button
 function adaptButtonSize() {
     if (!whoBehind) return;
     
     const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
     let buttonScale, bottomPosition;
     
-    if (screenWidth < 480) {
+    // Consider both width and height
+    if (screenWidth < 360) {
+        buttonScale = 0.7;
+        bottomPosition = 20;
+    } else if (screenWidth < 480) {
         buttonScale = 0.8;
-        bottomPosition = 60;
+        bottomPosition = screenHeight < 600 ? 40 : 60;
     } else if (screenWidth < 768) {
         buttonScale = 0.9;
-        bottomPosition = 70;
+        bottomPosition = screenHeight < 700 ? 50 : 70;
     } else {
         buttonScale = 1.0;
-        bottomPosition = 80;
+        bottomPosition = screenHeight < 800 ? 60 : 80;
     }
     
     // Apply position and scale
@@ -143,6 +265,7 @@ function adaptButtonSize() {
 function adaptAllElements() {
     adaptLyingDogSize();
     adaptCardsSize();
+    adaptChapterCardsSize(); // Add chapter cards adaptation
     adaptButtonSize();
 }
 
@@ -155,6 +278,33 @@ window.addEventListener('resize', () => {
             adaptAllElements();
         }
     }, 100);
+});
+
+// ========================================
+// CHAPTERS CAROUSEL - Simple wheel conversion
+// ========================================
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        const viewport = document.querySelector('.chapters-viewport');
+        const chapters = document.querySelector('.chapters');
+        if (viewport && chapters) {
+            // Listen to wheel events on both viewport and chapters for larger scroll area
+            const handleWheel = (e) => {
+                if (chapters.classList.contains('active')) {
+                    // Only prevent default and convert if it's vertical scroll
+                    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+                        e.preventDefault();
+                        viewport.scrollLeft += e.deltaY * 0.9;
+                    }
+                }
+            };
+            
+            viewport.addEventListener('wheel', handleWheel, { passive: false });
+            chapters.addEventListener('wheel', handleWheel, { passive: false });
+            
+            console.log('Chapters wheel scroll initialized - expanded area');
+        }
+    }, 5000);
 });
 
 // Mobile Navigation Toggle
@@ -384,29 +534,32 @@ function switchToProjectsMode() {
     setTimeout(() => {
         if (lyingDog) {
             console.log('Adding slide-in class to lying dog');
+            
+            // Apply initial transform BEFORE adding slide-in class
+            adaptLyingDogSize();
+            
             lyingDog.classList.add('slide-in');
             
             // Start eye tracking for lying dog
             startLyingDogEyeTracking();
             
-            // Apply responsive adaptation after dog appears
+            // Apply responsive adaptation again after animation completes
             setTimeout(() => {
                 adaptLyingDogSize();
-            }, 100);
+            }, 1500);
         } else {
             console.log('Lying dog element not found!');
         }
     }, 1200);
     
-    // 4000ms: Show 3D card ring and start rotation (after dog slides in and eyes complete sequence)
+    // 4000ms: Show Chapters carousel (after dog slides in and eyes complete sequence)
     setTimeout(() => {
-        sideOrbit.classList.add('active');
-        card3d.classList.add('run');
-        
-        // Apply responsive adaptation for cards
-        setTimeout(() => {
-            adaptCardsSize();
-        }, 100);
+        const chaptersCarousel = document.getElementById('chaptersCarousel');
+        if (chaptersCarousel) {
+            chaptersCarousel.classList.add('active');
+            // Apply chapter cards adaptation
+            adaptChapterCardsSize();
+        }
     }, 4000);
     
     // 4200ms: Show who's behind section (slide up from bottom)
@@ -1177,3 +1330,304 @@ const throttledScrollHandler = throttle(() => {
 }, 16);
 
 window.addEventListener('scroll', throttledScrollHandler);
+
+// ============================================================================
+// 3D Card Flip with Random Initial Angles and Spring Return
+// ============================================================================
+
+/**
+ * Generates random angle for initial card tilt
+ */
+function randomAngle(min, max) {
+    return (Math.random() * (max - min) + min).toFixed(2);
+}
+
+/**
+ * Applies random initial angles to all chapter cards
+ */
+function initializeCardAngles() {
+    const cards = document.querySelectorAll('.chapter-card');
+    
+    cards.forEach((card, index) => {
+        // Generate random 3D angles - larger variety for dramatic differences
+        const rx = randomAngle(-20, 20);   // X tilt - vertical perspective (larger)
+        const ry = randomAngle(-25, 25);   // Y tilt - horizontal perspective (larger)
+        const rz = randomAngle(-15, 15);   // Z rotation - plane rotation (larger)
+        const tz = randomAngle(-10, 20);   // Z translation - depth (larger range)
+        
+        // Generate random float animation properties
+        const floatDuration = (2.5 + Math.random() * 1.5).toFixed(2); // 2.5-4s
+        const floatDelay = (Math.random() * 2).toFixed(2); // 0-2s
+        
+        // Store in dataset for spring return
+        card.dataset.rz = rz;
+        card.dataset.rx = rx;
+        card.dataset.ry = ry;
+        card.dataset.tz = tz;
+        
+        // Set initial transform
+        const card3d = card.querySelector('.card-3d');
+        card3d.style.setProperty('--rz', rz + 'deg');
+        card3d.style.setProperty('--rx', rx + 'deg');
+        card3d.style.setProperty('--ry', ry + 'deg');
+        card3d.style.setProperty('--tz', tz + 'px');
+        
+        // Set float animation properties
+        card.style.setProperty('--float-duration', floatDuration + 's');
+        card.style.setProperty('--float-delay', floatDelay + 's');
+        
+        console.log(`Card ${index} initialized: rz=${rz}°, rx=${rx}°, ry=${ry}°, tz=${tz}px, float=${floatDuration}s delay=${floatDelay}s`);
+    });
+}
+
+/**
+ * Spring animation for card return with overshoot
+ */
+function springReturn(card) {
+    const card3d = card.querySelector('.card-3d');
+    const rz = card.dataset.rz || '0';
+    const rx = card.dataset.rx || '0';
+    const ry = card.dataset.ry || '0';
+    const tz = card.dataset.tz || '0';
+    
+    // Remove is-active for smooth transition
+    card3d.classList.remove('is-active');
+    
+    // Apply spring-like easing with overshoot
+    card3d.style.transition = 'transform 0.32s cubic-bezier(0.18, 0.9, 0.2, 1.1)';
+    
+    // Set to initial angles with slight overshoot (target + 2° then back)
+    const overshootZ = (parseFloat(rz) + (parseFloat(rz) > 0 ? 2 : -2)).toFixed(2);
+    
+    // First: overshoot (slightly past target)
+    setTimeout(() => {
+        card3d.style.setProperty('--rz', overshootZ + 'deg');
+        card3d.style.setProperty('--rx', '0deg');
+        card3d.style.setProperty('--ry', '0deg');
+        card3d.style.setProperty('--tz', '0px');
+    }, 10);
+    
+    // Then: return to normal position with random angles
+    setTimeout(() => {
+        card3d.style.transition = 'transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1)';
+        card3d.style.setProperty('--rz', rz + 'deg');
+        card3d.style.setProperty('--rx', rx + 'deg');
+        card3d.style.setProperty('--ry', ry + 'deg');
+        card3d.style.setProperty('--tz', tz + 'px');
+    }, 160);
+}
+
+/**
+ * Calculates 3D tilt based on mouse position
+ */
+function calculateTilt(e, card) {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // Normalize to [-1, 1]
+    const nx = Math.min(Math.max((x / rect.width) * 2 - 1, -1), 1);
+    const ny = Math.min(Math.max((y / rect.height) * 2 - 1, -1), 1);
+    
+    // Calculate tilt angles - 15° for very dramatic, flexible effect
+    // X axis reversed for natural feel
+    const tx = (-ny * 15).toFixed(2);
+    const ty = (nx * 15).toFixed(2);
+    
+    return { tx, ty };
+}
+
+/**
+ * Attaches 3D tilt and flip effects to chapter cards
+ */
+function attachChapterCardEffects() {
+    const cards = document.querySelectorAll('.chapter-card');
+    
+    if (cards.length === 0) return;
+    
+    let targetTx = 0, targetTy = 0;
+    let currentTx = 0, currentTy = 0;
+    let raf = null;
+    
+    function animate() {
+        // Smooth interpolation with easing - slow follow with strong inertia
+        currentTx += (targetTx - currentTx) * 0.08; // 0.08 = much slower follow (more inertia)
+        currentTy += (targetTy - currentTy) * 0.08;
+        
+        // Apply to all cards
+        cards.forEach(card => {
+            const card3d = card.querySelector('.card-3d');
+            if (card.classList.contains('is-active')) {
+                card3d.style.setProperty('--tx', currentTx.toFixed(2) + 'deg');
+                card3d.style.setProperty('--ty', currentTy.toFixed(2) + 'deg');
+            }
+        });
+        
+        // Continue animation if still moving
+        if (Math.abs(targetTx - currentTx) > 0.1 || Math.abs(targetTy - currentTy) > 0.1) {
+            raf = requestAnimationFrame(animate);
+        } else {
+            raf = null;
+        }
+    }
+    
+    function onMove(e) {
+        const card = e.currentTarget;
+        const card3d = card.querySelector('.card-3d');
+        const { tx, ty } = calculateTilt(e, card);
+        
+        targetTx = parseFloat(tx);
+        targetTy = parseFloat(ty);
+        
+        card3d.classList.add('is-active');
+        card.classList.add('is-active');
+        
+        // Start animation if not running
+        if (!raf) {
+            raf = requestAnimationFrame(animate);
+        }
+    }
+    
+    function onLeave(e) {
+        const card = e.currentTarget;
+        const card3d = card.querySelector('.card-3d');
+        
+        // Smooth return to 0
+        targetTx = 0;
+        targetTy = 0;
+        
+        // Start smooth animation to return to center
+        if (!raf) {
+            raf = requestAnimationFrame(animate);
+        }
+        
+        // After smooth return, apply spring return to random angle
+        setTimeout(() => {
+            card3d.classList.remove('is-active');
+            card.classList.remove('is-active');
+            card3d.style.setProperty('--tx', '0deg');
+            card3d.style.setProperty('--ty', '0deg');
+            
+            if (raf) {
+                cancelAnimationFrame(raf);
+                raf = null;
+            }
+            
+            // Spring return to random initial angle
+            springReturn(card);
+        }, 200); // Wait for smooth return animation
+    }
+    
+    // Attach to each card
+    cards.forEach(card => {
+        card.addEventListener('mousemove', onMove);
+        card.addEventListener('mouseleave', onLeave);
+        
+        // Touch support for mobile
+        card.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.changedTouches[0];
+            const fakeEvent = {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            };
+            onMove(fakeEvent);
+        });
+        card.addEventListener('touchend', onLeave);
+    });
+}
+
+// Function to detect which card is centered with throttling
+let rafId = null;
+function updateCenteredCard() {
+    if (rafId) cancelAnimationFrame(rafId);
+    
+    rafId = requestAnimationFrame(() => {
+        const cards = document.querySelectorAll('.chapter-card');
+        const viewport = document.querySelector('.chapters-viewport');
+        if (!viewport || cards.length === 0) return;
+        
+        const viewportCenter = viewport.scrollLeft + viewport.clientWidth / 2;
+        
+        // Find the closest card to center
+        let closestCard = null;
+        let closestDistance = Infinity;
+        
+        cards.forEach(card => {
+            const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+            const distance = Math.abs(cardCenter - viewportCenter);
+            
+            // Remove centered from all first
+            card.classList.remove('is-centered');
+            
+            // Track closest card
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closestCard = card;
+            }
+        });
+        
+        // Only mark the closest card as centered (only if within reasonable distance)
+        if (closestCard && closestDistance < 240) { // Half of card width
+            closestCard.classList.add('is-centered');
+        }
+        
+        rafId = null;
+    });
+}
+
+// Initialize immediately when script loads
+initializeCardAngles();
+
+// Attach effects when carousel becomes active
+setTimeout(() => {
+    // Re-initialize angles when carousel appears
+    initializeCardAngles();
+    attachChapterCardEffects();
+    
+    // Center detection for auto-scaling centered card
+    const viewport = document.querySelector('.chapters-viewport');
+    if (viewport) {
+        let isUpdating = false;
+        let snapTimeout = null;
+        
+        // Update on scroll
+        viewport.addEventListener('scroll', () => {
+            if (!isUpdating) {
+                isUpdating = true;
+                requestAnimationFrame(() => {
+                    updateCenteredCard();
+                    isUpdating = false;
+                });
+            }
+            
+            // Snap to nearest card after scroll ends
+            clearTimeout(snapTimeout);
+            snapTimeout = setTimeout(() => {
+                const cards = document.querySelectorAll('.chapter-card');
+                if (!viewport || cards.length === 0) return;
+                
+                let closestCard = null;
+                let closestDistance = Infinity;
+                const viewportCenter = viewport.scrollLeft + viewport.clientWidth / 2;
+                
+                cards.forEach(card => {
+                    const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+                    const distance = Math.abs(cardCenter - viewportCenter);
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestCard = card;
+                    }
+                });
+                
+                // Snap to center if far enough
+                if (closestCard && closestDistance > 30) {
+                    const targetLeft = closestCard.offsetLeft + closestCard.offsetWidth / 2 - viewport.offsetWidth / 2;
+                    viewport.scrollTo({ left: targetLeft, behavior: 'smooth' });
+                }
+            }, 150);
+        }, { passive: true });
+        
+        updateCenteredCard(); // Initial check
+    }
+}, 4500);

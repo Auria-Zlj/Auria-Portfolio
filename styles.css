@@ -2004,9 +2004,10 @@ body {
     width: 180px;
     height: 210px;
     opacity: 1;
-    transform: translateX(0) rotate(-15deg) scale(1.3);
+    transform: translateX(0) rotate(-15deg);
     transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     z-index: 5; /* 降低z-index，让卡片和按钮在上面 */
+    transform-origin: center center;
 }
 
 /* 眼珠子在中间停半秒，然后左右左，每个停0.2秒，最后回到中间 */
@@ -2044,18 +2045,20 @@ body {
 @keyframes dogSlideIn {
     0% {
         right: -200px;
-        transform: translateX(0) rotate(-15deg) scale(1.3);
+        transform: translateX(0) rotate(-15deg) scale(var(--dog-scale, 1.0));
     }
     100% {
         right: clamp(20px, 5vw, 60px);
-        transform: translateX(0) rotate(-15deg) scale(1.3);
+        transform: translateX(0) rotate(-15deg) scale(var(--dog-scale, 1.0));
     }
 }
 
 .lying-dog.slide-in {
-    right: -200px; /* 初始位置在屏幕外 */
-    bottom: 50px; /* 固定在底部右下角 */
-    transform: translateX(0) rotate(-15deg) scale(1.3);
+    right: clamp(10px, 3vw, 30px);
+    bottom: 50px;
+    width: 180px;
+    height: 210px;
+    /* transform will be set by JavaScript for responsive scaling */
     animation: dogSlideIn 1s ease-out 0.5s forwards;
 }
 
@@ -2253,6 +2256,471 @@ body {
 .side-orbit.slide-up {
     transform: translate(-50%, -50%) translateY(100vh) scale(0.8);
     opacity: 0;
+}
+
+/* Chapters Carousel - Horizontal Card Scrolling (ponpon-mania style) */
+.chapters {
+    position: absolute;
+    left: 0;
+    top: 15%;
+    width: 100%;
+    height: 700px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transform: translateY(100vh);
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 10;
+    overflow: visible;
+}
+
+.chapters-viewport {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    cursor: grab;
+    /* Hide scrollbar */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.chapters-viewport::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+/* Responsive: prevent overlap with lying dog and button */
+@media (max-width: 1024px) {
+    .chapters-track {
+        gap: 140px;
+    }
+}
+
+@media (max-width: 768px) {
+    .chapters {
+        top: 15%;
+        height: 420px;
+    }
+    
+    .chapters-track {
+        gap: 100px;
+    }
+}
+
+@media (max-width: 480px) {
+    .chapters {
+        top: 12%;
+        height: 380px;
+    }
+    
+    .chapters-track {
+        gap: 10px;
+        padding: 0 !important;
+    }
+}
+
+@media (max-width: 360px) {
+    .chapters {
+        top: 10%;
+        height: 320px;
+    }
+    
+    .chapters-track {
+        gap: 8px;
+        padding: 0 !important;
+    }
+}
+
+@media (max-width: 320px) {
+    .chapters-track {
+        gap: 6px;
+        padding: 0 !important;
+    }
+}
+
+.chapters.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.chapters-viewport:active {
+    cursor: grabbing;
+}
+
+.chapters-track {
+    display: flex;
+    gap: 180px;
+    padding: 0 calc(50vw - 240px);
+    list-style: none;
+    height: 100%;
+    align-items: center;
+    min-width: max-content; /* Ensure track is wider than viewport */
+}
+
+/* Chapter card container */
+.chapter-card {
+    flex: 0 0 auto;
+    width: 480px;
+    height: 320px;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    position: relative;
+    transform-origin: center center;
+    opacity: 1 !important;
+    animation: none !important;
+    transition: none !important;
+    transform: scale(0.65) !important;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* Non-centered and non-hovered cards - small with float animation */
+.chapter-card:not(.is-centered):not(:hover) {
+    animation: float var(--float-duration, 3s) ease-in-out infinite !important;
+    animation-delay: var(--float-delay, 0s);
+    transform: scale(0.65) !important;
+    opacity: 1 !important;
+    z-index: 1;
+}
+
+/* Float animation - different rhythm for each card */
+@keyframes float {
+    0%, 100% {
+        transform: scale(0.65) translateY(0px);
+    }
+    50% {
+        transform: scale(0.65) translateY(-15px);
+    }
+}
+
+
+/* Centered card - scale up automatically */
+.chapter-card.is-centered {
+    transform: scale(1.35) !important;
+    opacity: 1 !important;
+    animation: none !important;
+    transition: none !important;
+    will-change: transform, opacity;
+    filter: brightness(1.15);
+}
+
+
+/* When centered, flatten 3D angles */
+.chapter-card.is-centered .card-3d {
+    transform: perspective(1500px)
+               rotateX(0deg)
+               rotateY(0deg)
+               rotateZ(0deg)
+               translateZ(0px)
+               scale(1) !important;
+    transition: none !important;
+}
+
+/* When hovering - only 3D tilt, NO scale change */
+.chapter-card:hover {
+    z-index: 15 !important;
+    opacity: 1 !important;
+    animation: none !important;
+    transition: none !important;
+    animation-name: none !important;
+    will-change: transform, opacity;
+}
+
+
+
+/* 3D card container */
+.chapter-card .card-3d {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transform: perspective(1500px)
+               rotateX(var(--rx, 0deg))
+               rotateY(var(--ry, 0deg))
+               rotateZ(var(--rz, 0deg))
+               translateZ(var(--tz, 0px));
+    /* Smooth inertial transition for hover tilt */
+    transition: transform 0.12s cubic-bezier(0.23, 1, 0.32, 1);
+    will-change: transform;
+}
+
+/* On hover: flatten 3D angles and apply mouse tilt */
+.chapter-card:hover .card-3d {
+    transition: none !important;
+    transform: perspective(1500px)
+               rotateX(var(--tx, 0deg))
+               rotateY(var(--ty, 0deg))
+               rotateZ(0deg)
+               translateZ(0px)
+               scale(1) !important;
+}
+
+/* Active state with explicit tilt angles */
+.chapter-card:hover .card-3d.is-active {
+    transform: perspective(1500px)
+               rotateX(var(--tx, 0deg))
+               rotateY(var(--ty, 0deg))
+               rotateZ(0deg)
+               translateZ(0px)
+               scale(1) !important;
+    transition: none !important;
+}
+
+/* Card faces (front and back) */
+.chapter-card .card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    border-radius: 12px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.chapter-card .card-front {
+    transform: rotateY(0deg);
+}
+
+.chapter-card .card-back {
+    display: none; /* No back face needed */
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    /* Disable float animation */
+    .chapter-card:not(:hover):not(.is-centered) {
+        animation: none !important;
+    }
+    
+    /* Disable 3D transforms */
+    .chapter-card .card-3d {
+        transform: none !important;
+        transition: transform 0.2s ease;
+    }
+    
+    .chapter-card:hover .card-3d {
+        transform: scale(1.05) !important;
+        transition: transform 0.2s ease;
+    }
+    
+    .chapter-card.is-centered .card-3d {
+        transform: scale(1.1) !important;
+        transition: transform 0.2s ease;
+    }
+    
+    /* Simplified hover effects */
+    .chapter-card:hover {
+        transform: scale(1.05) !important;
+        filter: brightness(1.05);
+    }
+    
+    /* Disable spring return animation */
+    .chapter-card .card-3d {
+        transition: transform 0.2s ease !important;
+    }
+}
+
+/* Responsive card size - gradually scale down */
+@media (max-width: 1024px) {
+    .chapter-card {
+        width: 420px;
+        height: 280px;
+    }
+    
+    .chapters .card-cover {
+        height: 180px;
+    }
+}
+
+@media (max-width: 768px) {
+    .chapter-card {
+        width: 360px;
+        height: 240px;
+    }
+    
+    .chapters .card-cover {
+        height: 160px;
+    }
+    
+    .chapters .card-title {
+        font-size: 1.1rem;
+    }
+    
+    .chapters .card-sub {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .chapter-card {
+        width: 300px;
+        height: 200px;
+    }
+    
+    .chapters .card-title {
+        font-size: 1rem;
+        padding: 12px 16px 6px;
+    }
+    
+    .chapters .card-sub {
+        font-size: 0.8rem;
+        padding: 0 16px 16px;
+    }
+    
+    .chapters .card-cover {
+        height: 120px;
+    }
+}
+
+@media (max-width: 480px) {
+    .chapter-card {
+        width: 120px;
+        height: 80px;
+    }
+    
+    .chapters .card-cover {
+        height: 50px;
+    }
+    
+    .chapters .card-title {
+        font-size: 0.7rem;
+        padding: 5px 7px 2px;
+    }
+    
+    .chapters .card-sub {
+        font-size: 0.55rem;
+        padding: 0 7px 7px;
+    }
+}
+
+@media (max-width: 360px) {
+    .chapter-card {
+        width: 100px;
+        height: 67px;
+    }
+    
+    .chapters .card-cover {
+        height: 40px;
+    }
+    
+    .chapters .card-title {
+        font-size: 0.6rem;
+        padding: 4px 5px 1px;
+    }
+    
+    .chapters .card-sub {
+        font-size: 0.5rem;
+        padding: 0 5px 5px;
+    }
+}
+
+@media (max-width: 320px) {
+    .chapter-card {
+        width: 90px;
+        height: 60px;
+    }
+    
+    .chapters .card-cover {
+        height: 35px;
+    }
+    
+    .chapters .card-title {
+        font-size: 0.55rem;
+        padding: 3px 4px 1px;
+    }
+    
+    .chapters .card-sub {
+        font-size: 0.45rem;
+        padding: 0 4px 4px;
+    }
+}
+
+/* Adaptive centered card scale for smaller screens (ONLY for centered, NOT hover) */
+@media (max-width: 1024px) {
+    .chapter-card.is-centered {
+        transform: scale(1.25) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .chapter-card.is-centered {
+        transform: scale(1.20) !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .chapter-card.is-centered {
+        transform: scale(1.10) !important;
+    }
+}
+
+@media (max-width: 360px) {
+    .chapter-card.is-centered {
+        transform: scale(1.05) !important;
+    }
+}
+
+
+.chapters .card.is-active {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+.chapters .card-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+    border-radius: 12px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.18s ease-out;
+    pointer-events: auto;
+}
+
+.chapters .card:hover .card-link {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.chapters .card-cover {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+}
+
+.chapters .card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    padding: 16px 20px 8px;
+    color: #1a1a1a;
+}
+
+.chapters .card-sub {
+    font-size: 0.9rem;
+    color: #666;
+    padding: 0 20px 20px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .chapters .card {
+        transition: none;
+    }
+    .chapters-viewport {
+        scroll-behavior: auto;
+    }
 }
 
 .card-3d {
