@@ -330,6 +330,11 @@ function switchToProjectsMode() {
     pageMode = 'projects';
     console.log('Switching to projects mode...');
     
+    // Hide about me view
+    if (aboutMeView) {
+        aboutMeView.classList.remove('active');
+    }
+    
     // Get landing page elements
     const dogCardsContainer = document.getElementById('dogCardsContainer');
     const intro = document.querySelector('.intro');
@@ -596,6 +601,11 @@ function switchToHomeMode() {
     card3d.classList.remove('run');
     projectsGrid.classList.remove('active');
     whoBehind.classList.remove('active');
+    
+    // Hide about me view
+    if (aboutMeView) {
+        aboutMeView.classList.remove('active');
+    }
     
     // Dog will be reset with the dog-cards-container
     
