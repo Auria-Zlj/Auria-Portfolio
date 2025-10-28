@@ -204,10 +204,8 @@
         </div>
       </div>
 
-      <!-- Projects View (Projects Mode) -->
-      <div class="projects-view" id="projectsView">
-        <!-- New Lying Dog (Exact copy of landing page dog but lying down) -->
-        <div class="lying-dog" id="lyingDog">
+      <!-- New Lying Dog (moved outside projects-view to avoid container slide-down) -->
+      <div class="lying-dog" id="lyingDog">
           <!-- 垂耳 -->
           <div class="ear left"></div>
           <div class="ear right"></div>
@@ -245,6 +243,8 @@
           </div>
         </div>
 
+      <!-- Projects View (Projects Mode) -->
+      <div class="projects-view" id="projectsView">
         <!-- Chapters Carousel - Projects horizontal scrolling -->
         <section class="chapters" id="chaptersCarousel">
           <div class="chapters-viewport" role="region" aria-label="Projects carousel">
@@ -253,9 +253,9 @@
                 <div class="card-3d">
                   <div class="card-face card-front">
                     <a class="card-link" href="#project1">
-                      <img class="card-cover" src="assets/macbook-pro-14.png" alt="ClariMe Project" />
-                      <h3 class="card-title">ClariMe</h3>
-                      <p class="card-sub">Remote collaboration tool</p>
+                      <img class="card-cover" src="assets/x-heal-project.png" alt="X-Heal Project" />
+                      <h3 class="card-title">X-Heal</h3>
+                      <p class="card-sub">5G Healthcare Platform</p>
                     </a>
                   </div>
                   <div class="card-face card-back">
@@ -269,9 +269,9 @@
                 <div class="card-3d">
                   <div class="card-face card-front">
                     <a class="card-link" href="#project2">
-                      <img class="card-cover" src="assets/mushroom-project.png" alt="MushRoommate Project" />
-                      <h3 class="card-title">MushRoommate</h3>
-                      <p class="card-sub">Sustainable home cultivation</p>
+                      <img class="card-cover" src="assets/macbook-pro-14.png" alt="ClariMe Project" />
+                      <h3 class="card-title">ClariMe</h3>
+                      <p class="card-sub">Remote collaboration tool</p>
                     </a>
                   </div>
                   <div class="card-face card-back">
@@ -285,9 +285,9 @@
                 <div class="card-3d">
                   <div class="card-face card-front">
                     <a class="card-link" href="#project3">
-                      <img class="card-cover" src="assets/iphone-expedia.png" alt="Expedia Redesign" />
-                      <h3 class="card-title">Data Transparency</h3>
-                      <p class="card-sub">Expedia App Redesign</p>
+                      <img class="card-cover" src="assets/mushroom-project.png" alt="MushRoommate Project" />
+                      <h3 class="card-title">MushRoommate</h3>
+                      <p class="card-sub">Sustainable home cultivation</p>
                     </a>
                   </div>
                   <div class="card-face card-back">
@@ -301,9 +301,9 @@
                 <div class="card-3d">
                   <div class="card-face card-front">
                     <a class="card-link" href="#project4">
-                      <img class="card-cover" src="assets/x-heal-project.png" alt="X-Heal Project" />
-                      <h3 class="card-title">X-Heal</h3>
-                      <p class="card-sub">5G Healthcare Platform</p>
+                      <img class="card-cover" src="assets/iphone-expedia.png" alt="Expedia Redesign" />
+                      <h3 class="card-title">Data Transparency</h3>
+                      <p class="card-sub">Expedia App Redesign</p>
                     </a>
                   </div>
                   <div class="card-face card-back">
@@ -342,6 +342,30 @@
           </div>
         </div>
       </div> <!-- End Projects View -->
+
+      <!-- About Me View -->
+      <div class="about-me-view" id="aboutMeView">
+        <div class="about-content">
+          <div class="about-photo">
+            <svg class="photo-frame" viewBox="0 0 300 300" preserveAspectRatio="none">
+              <!-- Inner ellipse (photo area) - vertical ellipse -->
+              <ellipse class="frame-path frame-inner" cx="150" cy="150" rx="110" ry="135"/>
+              <!-- Outer ellipse (border) - vertical ellipse -->
+              <ellipse class="frame-path frame-outer" cx="150" cy="150" rx="115" ry="140"/>
+            </svg>
+            <div class="sparkles-container" id="photoSparkles"></div>
+            <div class="photo-content">
+              <img src="image/Me.JPG" alt="Auria Zhang" />
+            </div>
+          </div>
+          <div class="about-text">
+            <h1 class="about-name">Hello，I'm Auria Zhang！</h1>
+            <p class="about-title">a UX designer and product thinker crafting intuitive systems across digital interfaces and connected devices.</p>
+            <p class="about-description">My work combines empathy, strategy, and hands-on prototyping to <span class="marker-blue">turn complex ideas</span> into experiences that <span class="underline-orange">work for people</span>.</p>
+          </div>
+        </div>
+        <button class="back-button" id="backToProjectsButton">Back to Projects</button>
+      </div> <!-- End About Me View -->
      </div>
 
    <!-- Navigation -->

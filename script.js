@@ -3,10 +3,11 @@
 // ========================================
 
 // Page state management
-let pageMode = 'home'; // 'home' | 'projects'
+let pageMode = 'home'; // 'home' | 'projects' | 'about'
 
 // DOM elements
 const projectsView = document.getElementById('projectsView');
+const aboutMeView = document.getElementById('aboutMeView');
 const dog = document.getElementById('dog');
 const lyingDog = document.getElementById('lyingDog');
 const leftPupilLying = document.getElementById('leftPupilLying'); // Lying dog pupils
@@ -15,6 +16,8 @@ const sideOrbit = document.getElementById('sideOrbit');
 const card3d = document.getElementById('card3d');
 const projectsGrid = document.getElementById('projectsGrid');
 const whoBehind = document.getElementById('whoBehind');
+const whoBehindButton = document.getElementById('whoBehindButton');
+const backToProjectsButton = document.getElementById('backToProjectsButton');
 const homeButton = document.getElementById('homeButton');
 
 // ========================================
@@ -530,7 +533,7 @@ function switchToProjectsMode() {
         projectsView.classList.add('active');
     }, 1800);
     
-    // 1200ms: Lying dog slides in from right FIRST (faster)
+    // 2400ms: Lying dog slides in from right (after container has slid down)
     setTimeout(() => {
         if (lyingDog) {
             console.log('Adding slide-in class to lying dog');
@@ -550,9 +553,9 @@ function switchToProjectsMode() {
         } else {
             console.log('Lying dog element not found!');
         }
-    }, 1200);
+    }, 2400);
     
-    // 4000ms: Show Chapters carousel (after dog slides in and eyes complete sequence)
+    // 5200ms: Show Chapters carousel (after dog slides in and eyes complete sequence)
     setTimeout(() => {
         const chaptersCarousel = document.getElementById('chaptersCarousel');
         if (chaptersCarousel) {
@@ -560,9 +563,9 @@ function switchToProjectsMode() {
             // Apply chapter cards adaptation
             adaptChapterCardsSize();
         }
-    }, 4000);
+    }, 5200);
     
-    // 4200ms: Show who's behind section (slide up from bottom)
+    // 5400ms: Show who's behind section (slide up from bottom)
     setTimeout(() => {
         whoBehind.classList.add('active');
         
@@ -570,7 +573,7 @@ function switchToProjectsMode() {
         setTimeout(() => {
             adaptButtonSize();
         }, 100);
-    }, 4200);
+    }, 5400);
 }
 
 // Switch back to home mode
@@ -623,6 +626,40 @@ function switchToHomeMode() {
     projectCards.forEach(card => {
         card.classList.remove('animate-in');
     });
+}
+
+// Switch to About Me mode
+function switchToAboutMode() {
+    if (pageMode === 'about') return;
+    
+    pageMode = 'about';
+    console.log('Switching to about mode...');
+    
+    // Hide projects view
+    projectsView.classList.remove('active');
+    
+    // Show about me view
+    if (aboutMeView) {
+        aboutMeView.classList.add('active');
+    }
+}
+
+// Switch back to Projects mode from About
+function switchBackToProjects() {
+    if (pageMode === 'projects') return;
+    
+    pageMode = 'projects';
+    console.log('Switching back to projects mode...');
+    
+    // Hide about me view
+    if (aboutMeView) {
+        aboutMeView.classList.remove('active');
+    }
+    
+    // Show projects view with slide down from top animation
+    if (projectsView) {
+        projectsView.classList.add('active');
+    }
 }
 
 // Animate project cards with stagger
@@ -1135,6 +1172,22 @@ window.addEventListener('load', () => {
     }
 });
 
+// Who's Behind button click handler
+if (whoBehindButton) {
+    whoBehindButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        switchToAboutMode();
+    });
+}
+
+// Back to Projects button click handler
+if (backToProjectsButton) {
+    backToProjectsButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        switchBackToProjects();
+    });
+}
+
 // Parallax effect for hero section
 window.addEventListener('scroll', () => {
     const scrolled = window.pageYOffset;
@@ -1631,3 +1684,91 @@ setTimeout(() => {
         updateCenteredCard(); // Initial check
     }
 }, 4500);
+
+// Initialize sparkles for photo frame
+function initPhotoSparkles() {
+    const container = document.getElementById('photoSparkles');
+    if (!container) return;
+    
+    const colors = ['#9E7AFF', '#FE8BBB', '#FFD700', '#FFA07A'];
+    const sparklesCount = 6; // Reduced count for more spacing
+    const sizeVariations = [15, 28, 50]; // Even larger sizes
+    
+    // Track last color to avoid consecutive same colors
+    let lastColor = null;
+    
+    const getRandomColor = () => {
+        let color;
+        do {
+            color = colors[Math.floor(Math.random() * colors.length)];
+        } while (color === lastColor && colors.length > 1); // Ensure different color
+        lastColor = color;
+        return color;
+    };
+    
+    const createSparkle = (position) => {
+        // Position is either 'top-left' or 'bottom-right'
+        let x, y;
+        let color = getRandomColor(); // Use function to avoid consecutive same colors
+        let delay = Math.random() * 3; // Increased delay range for more spacing
+        let duration = Math.random() * 1.5 + 0.8;
+        let size = sizeVariations[Math.floor(Math.random() * sizeVariations.length)];
+        
+        // Photo is at: left=40px, top=15px, size 220x270
+        // Frame is 300x300
+        
+        if (position === 'top-left') {
+            // Top-left corner: right at the photo edge
+            // X: 0-35px (left side near frame)
+            // Y: 12-20px (right at photo top edge which is at 15px)
+            x = Math.random() * 35 + 20;
+            y = Math.random() * 8 + 40;
+        } else { // bottom-right
+            // Bottom-right corner: can be a bit on the photo for visibility
+            // Photo ends at: left=260px, top=285px
+            // Move upward and slightly into photo area for visibility
+            x = Math.random() * 28 + 200;
+            y = Math.random() * 20 + 215;
+        }
+        
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        sparkle.style.left = `${x}px`;
+        sparkle.style.top = `${y}px`;
+        sparkle.style.width = `${size}px`;
+        sparkle.style.height = `${size}px`;
+        sparkle.style.animation = `sparkle-animation ${duration}s ease-in-out ${delay}s infinite`;
+        
+        sparkle.innerHTML = `
+            <svg width="${size}" height="${size}" viewBox="0 0 21 21">
+                <path d="M9.82531 0.843845C10.0553 0.215178 10.9446 0.215178 11.1746 0.843845L11.8618 2.72026C12.4006 4.19229 12.3916 6.39157 13.5 7.5C14.6084 8.60843 16.8077 8.59935 18.2797 9.13822L20.1561 9.82534C20.7858 10.0553 20.7858 10.9447 20.1561 11.1747L18.2797 11.8618C16.8077 12.4007 14.6084 12.3916 13.5 13.5C12.3916 14.6084 12.4006 16.8077 11.8618 18.2798L11.1746 20.1562C10.9446 20.7858 10.0553 20.7858 9.82531 20.1562L9.13819 18.2798C8.59932 16.8077 8.60843 14.6084 7.5 13.5C6.39157 12.3916 4.19225 12.4007 2.72023 11.8618L0.843814 11.1747C0.215148 10.9447 0.215148 10.0553 0.843814 9.82534L2.72023 9.13822C4.19225 8.59935 6.39157 8.60843 7.5 7.5C8.60843 6.39157 8.59932 4.19229 9.13819 2.72026L9.82531 0.843845Z" fill="${color}"/>
+            </svg>
+        `;
+        
+        sparkle.style.setProperty('--sparkle-scale', size / 10); // Scale animation based on size
+        
+        container.appendChild(sparkle);
+        
+        setTimeout(() => {
+            sparkle.remove();
+        }, (duration + delay) * 1000);
+    };
+    
+    // Create initial sparkles - half at top-left, half at bottom-right
+    for (let i = 0; i < sparklesCount; i++) {
+        const position = i % 2 === 0 ? 'top-left' : 'bottom-right';
+        setTimeout(() => createSparkle(position), i * 500); // Increased interval from 200 to 400
+    }
+    
+    // Continuously generate new sparkles
+    setInterval(() => {
+        // Randomly choose corner
+        const position = Math.random() < 0.5 ? 'top-left' : 'bottom-right';
+        createSparkle(position);
+    }, 1200); // Increased interval from 600 to 1200ms
+}
+
+// Initialize sparkles when about me page loads
+document.addEventListener('DOMContentLoaded', () => {
+    initPhotoSparkles();
+});
