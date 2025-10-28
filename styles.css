@@ -3096,9 +3096,9 @@ body {
 }
 
 .about-name {
-    font-family: "Courier New", monospace;
+    font-family: 'Caveat', cursive;
     font-size: clamp(2rem, 5vw, 3.5rem);
-    font-weight: bold;
+    font-weight: 700;
     margin-bottom: 20px;
     line-height: 1.2;
 }
