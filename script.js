@@ -3,11 +3,12 @@
 // ========================================
 
 // Page state management
-let pageMode = 'home'; // 'home' | 'projects' | 'about'
+let pageMode = 'home'; // 'home' | 'projects' | 'about' | 'project'
 
 // DOM elements
 const projectsView = document.getElementById('projectsView');
 const aboutMeView = document.getElementById('aboutMeView');
+const projectView = document.getElementById('project1');
 const dog = document.getElementById('dog');
 const lyingDog = document.getElementById('lyingDog');
 const leftPupilLying = document.getElementById('leftPupilLying'); // Lying dog pupils
@@ -666,8 +667,13 @@ function switchBackToProjects() {
         aboutMeView.classList.remove('active');
     }
     
-    // Show projects view with slide down from top animation
+    // Hide project detail view overlay if present
+    if (projectView) {
+        projectView.style.display = 'none';
+    }
+    // Show projects view
     if (projectsView) {
+        projectsView.style.display = 'block';
         projectsView.classList.add('active');
     }
 }
@@ -1194,7 +1200,7 @@ if (whoBehindButton) {
 if (backToProjectsButton) {
     backToProjectsButton.addEventListener('click', (e) => {
         e.preventDefault();
-        switchBackToProjects();
+        showProjectsView();
     });
 }
 
@@ -1782,3 +1788,79 @@ function initPhotoSparkles() {
 document.addEventListener('DOMContentLoaded', () => {
     initPhotoSparkles();
 });
+
+// ========================================
+// PROJECT PAGE FUNCTIONS
+// ========================================
+
+// Show projects view
+function showProjectsView() {
+    pageMode = 'projects';
+    
+    // Hide all views
+    hideAllViews();
+    
+    // Show projects view
+    if (projectsView) {
+        projectsView.style.display = 'block';
+        projectsView.classList.add('active');
+    }
+    
+    // Hide dog and show lying dog
+    if (dog) dog.style.display = 'none';
+    if (lyingDog) lyingDog.style.display = 'block';
+
+    // Ensure bottom "Who's Behind" section is visible when returning
+    if (whoBehind) {
+        whoBehind.classList.add('active');
+        // small timeout to adapt sizing after layout change
+        setTimeout(() => {
+            try { adaptButtonSize(); } catch (_) {}
+        }, 100);
+    }
+
+    // Ensure chapters carousel (if present) is active again
+    const chaptersCarousel = document.getElementById('chaptersCarousel');
+    if (chaptersCarousel) {
+        chaptersCarousel.classList.add('active');
+    }
+
+    // Also reactivate orbit/cards/grid so the page matches the main projects scene
+    if (sideOrbit) sideOrbit.classList.add('active');
+    if (card3d) card3d.classList.add('run');
+    if (projectsGrid) projectsGrid.classList.add('active');
+}
+
+// Show project detail view
+function showProjectView(projectId) {
+    pageMode = 'project';
+    
+    // Hide all views
+    hideAllViews();
+    
+    // Show project view
+    const projectElement = document.getElementById('project1');
+    
+    if (projectElement) {
+        projectElement.style.display = 'block';
+        projectElement.style.background = '#F4F0E7';
+        projectElement.style.zIndex = '10001';
+        projectElement.style.position = 'fixed';
+        projectElement.style.top = '0';
+        projectElement.style.left = '0';
+        projectElement.style.width = '100%';
+        projectElement.style.height = '100%';
+        projectElement.style.overflowY = 'auto';
+    }
+    
+    // Hide dog and show lying dog
+    if (dog) dog.style.display = 'none';
+    if (lyingDog) lyingDog.style.display = 'block';
+}
+
+// Hide all views
+function hideAllViews() {
+    if (projectsView) projectsView.style.display = 'none';
+    if (aboutMeView) aboutMeView.style.display = 'none';
+    if (projectView) projectView.style.display = 'none';
+}

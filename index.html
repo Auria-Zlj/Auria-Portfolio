@@ -253,15 +253,19 @@
                 <div class="card-3d">
                   <div class="card-face card-front">
                     <a class="card-link" href="#project1">
-                      <img class="card-cover" src="assets/x-heal-project.png" alt="X-Heal Project" />
-                      <h3 class="card-title">X-Heal</h3>
-                      <p class="card-sub">5G Healthcare Platform</p>
-                    </a>
+                      <img class="card-cover" src="image/p1.1.png" alt="X-Heal Project" />
+                      <div class="card-content-overlay">
+                        <h3 class="card-title">X-Heal | ACL Rehab System</h3>
+                        <p class="card-description">Dual-sensor IoT platform for accurate at-home recovery and remote clinician monitoring.</p>
+                        <p class="card-sponsor">T-Mobile Sponsored @ UW GIX</p>
+                  <div class="view-more" onclick="showProjectView('project1')">
+                    <span>View More</span>
+                    <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M8.59 16.59L13.17 12L8.59 7.41L10 6L16 12L10 18L8.59 16.59Z" fill="currentColor"/>
+                    </svg>
                   </div>
-                  <div class="card-face card-back">
-                    <div class="card-back-content">
-                      <div class="back-icon">📋</div>
-                    </div>
+                      </div>
+                    </a>
                   </div>
                 </div>
               </li>
@@ -342,6 +346,262 @@
           </div>
         </div>
       </div> <!-- End Projects View -->
+
+      <!-- X-Heal Project View -->
+      <div class="project-view" id="project1">
+        <div class="project-container">
+          <!-- Hero Full-Bleed Section -->
+          <section class="project-hero-fullbleed">
+            <div class="hero-bg">
+              <img src="image/p1.1.png" alt="System setup with sensors and clinician dashboard" class="hero-bg-img" />
+            </div>
+            <div class="hero-overlay-gradient"></div>
+            <div class="hero-inner">
+              <div class="hero-text">
+                <div class="title-with-tooltip">
+                  <h1 class="project-title">X-Heal | ACL Rehab System</h1>
+                  <div class="tooltip-container">
+                    <span class="tooltip-trigger">ⓘ</span>
+                    <div class="tooltip-content">
+                      <b>ACL</b> — anterior cruciate ligament, a key knee ligament often injured in sports.
+                    </div>
+                  </div>
+                </div>
+                <p class="project-subtitle">Smart dual-sensor platform enabling precise at-home ACL recovery and clinician oversight.</p>
+                <div class="project-description">A connected rehab system combining wearable sensors, real-time feedback, and clinician dashboards to improve post-surgery recovery.</div>
+                <div class="project-meta">
+                  <div class="my-role"><strong>My Role</strong><br>Lead UX Designer & Full-Stack Developer</div>
+                  <div class="highlights">
+                    <strong>Highlights</strong>
+                    <ul>
+                      <li>UX Design</li>
+                      <li>React + Firebase</li>
+                      <li>BLE Integration</li>
+                      <li>IoT System Architecture</li>
+                      <li>Sponsored by T-Mobile × UW GIX</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Challenge Section (updated with background and centered narrative) -->
+          <section class="project-challenge-hero">
+            <img
+              src="image/p1.1.png"
+              alt="Patient doing home rehabilitation exercise"
+              class="challenge-bg"
+            />
+            <div class="challenge-inner">
+              <h2 class="section-heading">The Challenge</h2>
+
+              <p class="challenge-line">ACL rehabilitation is long, repetitive, and lonely.</p>
+              <p class="challenge-line">Patients often lose motivation when progress feels invisible,</p>
+              <p class="challenge-line challenge-strong">and clinicians can’t see problems until it’s too late.</p>
+
+              <div class="challenge-question">
+                <p class="challenge-label">We asked:</p>
+                <p class="challenge-quote">How might we make recovery feel visible, motivating, and clinically trusted?</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Research & Insights (updated, includes Persona) -->
+          <section class="project-section research-section" id="research">
+            <h2 class="section-heading">Research & Insights</h2>
+            <div class="section-content">
+              <div class="research-kicker">Research Overview</div>
+              <p class="research-subheading">We reviewed existing literature, interviewed ACL patients and clinicians, and synthesized key insights to understand real-world recovery challenges.</p>
+
+              <!-- Interactive Research Diagram (replaces placeholder) -->
+              <div class="research-diagram" aria-label="Research process: Literature Review to Interviews to Insight Synthesis">
+                <div class="rd-step">
+                  <div class="rd-icon">📖</div>
+                  <div class="rd-title">Literature Review</div>
+                  <div class="rd-desc">Academic papers, prior studies</div>
+                </div>
+                <div class="rd-line" aria-hidden="true"></div>
+                <div class="rd-step">
+                  <div class="rd-icon">💬</div>
+                  <div class="rd-title">Interviews</div>
+                  <div class="rd-desc">Patients and clinicians</div>
+                </div>
+                <div class="rd-line" aria-hidden="true"></div>
+                <div class="rd-step">
+                  <div class="rd-icon">💡</div>
+                  <div class="rd-title">Insight Synthesis</div>
+                  <div class="rd-desc">Themes & opportunity areas</div>
+                </div>
+              </div>
+
+              <!-- Insight Cards Grid (between diagram and persona) -->
+              <section class="insights-cards" aria-label="Key Findings">
+                <div class="insights-cards-inner">
+                  <h3 class="insights-heading">Key Findings</h3>
+                  <p class="insights-subtitle">(Summarized from literature review, patient interviews, and clinician insights)</p>
+                  <div class="insights-grid-cards">
+                    <article class="insight-card">
+                      <div class="insight-icon" aria-hidden="true">🧭</div>
+                      <h4 class="insight-title">Limited Feedback Loop</h4>
+                      <p class="insight-text"><strong>Most patients</strong> perform home exercises without knowing whether their form or range is correct — leading to slow or incorrect recovery.</p>
+                    </article>
+                    <article class="insight-card">
+                      <div class="insight-icon" aria-hidden="true">📈</div>
+                      <h4 class="insight-title">Invisible Progress</h4>
+                      <p class="insight-text">Motivation drops when patients can’t <strong>visualize improvement</strong> or track milestones between sessions.</p>
+                    </article>
+                    <article class="insight-card">
+                      <div class="insight-icon" aria-hidden="true">👁️</div>
+                      <h4 class="insight-title">Fragmented Monitoring</h4>
+                      <p class="insight-text">Clinicians depend on <strong>periodic visits</strong> or self-reports, missing early warning signs of poor adherence or incorrect technique.</p>
+                    </article>
+                    <article class="insight-card">
+                      <div class="insight-icon" aria-hidden="true">🔗</div>
+                      <h4 class="insight-title">Data Disconnection</h4>
+                      <p class="insight-text">No unified system bridges <strong>motion data</strong> with clinical decision-making, making remote supervision nearly impossible.</p>
+                    </article>
+                  </div>
+                </div>
+              </section>
+
+              
+
+              <!-- Persona Card within Research -->
+              <div class="persona-card">
+                <div class="persona-visual">
+                  <img src="image/persona.png" alt="Zach Jackson persona" />
+                </div>
+              </div>
+              <div class="persona-caption">Our primary user — Zach Jackson, a 26-year-old baseball player recovering from ACL surgery, struggling with confidence and guidance in home rehab.</div>
+            </div>
+          </section>
+
+          <!-- Pain Points -->
+          <section class="project-section painpoints-section" id="pain-points">
+            <h2 class="section-heading">Key Pain Points</h2>
+            <ul class="painpoints-list"></ul>
+
+            <!-- Patient label and image -->
+            <div class="painpoints-figure">
+              <div class="painpoints-label">Patient</div>
+              <div class="painpoints-image-wrap">
+                <img src="image/patient.png" alt="Patient context" class="feathered-img" />
+              </div>
+              <div class="painpoints-bubbles" aria-label="Patient quotes">
+                <p class="bubble">“I never know if I’m doing the movement right...”</p>
+                <p class="bubble">“I can’t tell if I’m getting better.”</p>
+                <p class="bubble">“It’s hard to stay motivated when no one’s guiding me.”</p>
+              </div>
+            </div>
+
+            <!-- Clinician label, bubbles left and image right -->
+            <div class="painpoints-figure clinician-figure">
+              <div class="painpoints-label">Clinician</div>
+              <div class="painpoints-bubbles" aria-label="Clinician quotes">
+                <p class="bubble">“I only see my patients once every few weeks, so I can’t track their daily progress.”</p>
+                <p class="bubble">“Without accurate data, I rely on patients’ memory or self-reporting.”</p>
+                <p class="bubble">“By the time I realize a problem, it’s already affected their recovery.”</p>
+              </div>
+              <div class="painpoints-image-wrap">
+                <img src="image/clinician.png" alt="Clinician context" class="feathered-img" />
+              </div>
+            </div>
+          </section>
+
+          <!-- Design Response / Solution -->
+          <section class="project-section solution-section" id="solution">
+            <h2 class="section-heading">Design Response / Solution</h2>
+            <div class="section-content">
+              <p>We designed a connected system combining dual wearable sensors, a guidance app with real-time feedback, and a clinician dashboard. This closes the loop between home exercises and professional oversight, restoring confidence and accuracy in recovery.</p>
+            </div>
+          </section>
+
+          <!-- Design Strategy Section -->
+          <section class="project-section">
+            <h2 class="section-heading">Design Strategy</h2>
+            <div class="section-content">
+              <p>We designed a dual-sided UX system addressing both patient and clinician needs:</p>
+              <ol>
+                <li><strong>Patient App</strong> – real-time motion feedback, progress tracking, and guidance.</li>
+                <li><strong>Clinician Dashboard</strong> – remote monitoring and automated reporting.</li>
+                <li><strong>Data Pipeline</strong> – BLE sensors stream angle and distance data to Firebase and auto-generate reports.</li>
+              </ol>
+              <p>Each component forms a continuous feedback loop between human movement and data insight.</p>
+            </div>
+          </section>
+
+          <!-- Experience Flow Section -->
+          <section class="project-section">
+            <h2 class="section-heading">Experience Flow</h2>
+            <div class="section-content">
+              <ol>
+                <li>Patient starts a guided exercise → receives real-time visual feedback.</li>
+                <li>System detects hold duration → counts repetitions accurately.</li>
+                <li>Session data uploads to the cloud → clinician dashboard updates instantly.</li>
+                <li>Progress report auto-generates → therapist adjusts rehab plan remotely.</li>
+              </ol>
+              <div class="result-box">
+                <strong>Result:</strong> A continuous experience connecting human motion, interface, and medical supervision.
+              </div>
+            </div>
+          </section>
+
+          <!-- UX Highlights Section -->
+          <section class="project-section">
+            <h2 class="section-heading">UX Design Highlights</h2>
+            <div class="section-content">
+              <ul>
+                <li><strong>Real-Time Feedback:</strong> Color-coded visuals and countdowns built trust and reduced uncertainty.</li>
+                <li><strong>Progress Visualization:</strong> Graphs reinforced motivation during long recovery cycles.</li>
+                <li><strong>Error Prevention:</strong> Range-of-motion cues prevented unsafe movements.</li>
+                <li><strong>Report Automation:</strong> Simplified data visualization for clinician clarity.</li>
+              </ul>
+            </div>
+          </section>
+
+          <!-- Hardware Integration Section -->
+          <section class="project-section">
+            <h2 class="section-heading">Hardware Integration</h2>
+            <div class="section-content">
+              <p>Two BLE modules capture knee angle and lift distance with adaptive orientation design. The UX design incorporated hardware latency and calibration constraints to ensure smooth, accurate feedback.</p>
+            </div>
+          </section>
+
+          <!-- Outcome Section -->
+          <section class="project-section">
+            <h2 class="section-heading">Outcome & Impact</h2>
+            <div class="section-content">
+              <ul>
+                <li>Increased patient confidence and consistency.</li>
+                <li>Enabled remote supervision and data-driven insights for clinicians.</li>
+                <li>Reduced motion feedback latency from minutes to milliseconds.</li>
+                <li>Prototype successfully integrated into the CareLink+ 5G test environment.</li>
+              </ul>
+            </div>
+          </section>
+
+          <!-- Reflection Section -->
+          <section class="project-section">
+            <h2 class="section-heading">Reflection</h2>
+            <div class="section-content">
+              <div class="reflection-quote">
+                <p>Designing for healthcare required balancing precision and empathy. We learned to validate not just technical accuracy, but emotional reassurance—because recovery isn't only about movement; it's about trust.</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Back Button -->
+          <div class="back-to-projects">
+            <button class="back-button" onclick="showProjectsView()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Back to Projects
+            </button>
+          </div>
+        </div>
+      </div>
 
       <!-- About Me View -->
       <div class="about-me-view" id="aboutMeView">
@@ -557,13 +817,14 @@
             <div class="project-card">
                 <div class="project-content">
                     <div class="project-text">
-                        <h3 class="project-title">X-Heal | 5G Healthcare Rehabilitation Platform</h3>
+                        <h3 class="project-title">X-Heal | ACL Rehab System</h3>
                         <p class="project-description">
-                            X-Heal is an advanced rehabilitation system that transforms patient recovery through real-time biofeedback, hardware-integrated motion tracking, and data-driven therapy insights. This project, developed at the University of Washington and supported by T-Mobile, explores how cutting-edge technology can enhance therapy outcomes, improve patient engagement, and push the boundaries of digital healthcare innovation.
+                            Dual-sensor IoT platform for accurate at-home recovery and remote clinician monitoring.
                         </p>
+                        <p class="project-sponsor">T-Mobile Sponsored @ UW GIX</p>
                     </div>
                     <div class="project-image">
-                        <img src="assets/x-heal-project.png" alt="X-Heal Project" class="project-img">
+                        <img src="image/p1.1.png" alt="X-Heal Project" class="project-img">
                     </div>
                 </div>
             </div>
