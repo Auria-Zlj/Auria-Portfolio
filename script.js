@@ -1834,28 +1834,36 @@ function showProjectsView() {
 // Show project detail view
 function showProjectView(projectId) {
     pageMode = 'project';
-    
-    // Hide all views
     hideAllViews();
-    
-    // Show project view
-    const projectElement = document.getElementById('project1');
-    
+    // Hide all project views
+    document.querySelectorAll('.project-view').forEach(function(div){ div.style.display = 'none'; });
+    // Show the requested project view
+    const projectElement = document.getElementById(projectId);
     if (projectElement) {
         projectElement.style.display = 'block';
-        projectElement.style.background = '#F4F0E7';
-        projectElement.style.zIndex = '10001';
-        projectElement.style.position = 'fixed';
-        projectElement.style.top = '0';
-        projectElement.style.left = '0';
-        projectElement.style.width = '100%';
-        projectElement.style.height = '100%';
-        projectElement.style.overflowY = 'auto';
+        if(projectId !== 'project3') {
+            projectElement.style.background = '#F4F0E7';
+            projectElement.style.zIndex = '10001';
+            projectElement.style.position = 'fixed';
+            projectElement.style.top = '0';
+            projectElement.style.left = '0';
+            projectElement.style.width = '100%';
+            projectElement.style.height = '100%';
+            projectElement.style.overflowY = 'auto';
+        } else {
+            projectElement.style.background = '';
+            projectElement.style.zIndex = '';
+            projectElement.style.position = '';
+            projectElement.style.top = '';
+            projectElement.style.left = '';
+            projectElement.style.width = '';
+            projectElement.style.height = '';
+            projectElement.style.overflowY = '';
+        }
     }
-    
-    // Hide dog and show lying dog
+    // Hide both dog and lying dog in project mode
     if (dog) dog.style.display = 'none';
-    if (lyingDog) lyingDog.style.display = 'block';
+    if (lyingDog) lyingDog.style.display = 'none';
 }
 
 // Hide all views
