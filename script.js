@@ -1841,25 +1841,14 @@ function showProjectView(projectId) {
     const projectElement = document.getElementById(projectId);
     if (projectElement) {
         projectElement.style.display = 'block';
-        if(projectId !== 'project3') {
-            projectElement.style.background = '#F4F0E7';
-            projectElement.style.zIndex = '10001';
-            projectElement.style.position = 'fixed';
-            projectElement.style.top = '0';
-            projectElement.style.left = '0';
-            projectElement.style.width = '100%';
-            projectElement.style.height = '100%';
-            projectElement.style.overflowY = 'auto';
-        } else {
-            projectElement.style.background = '';
-            projectElement.style.zIndex = '';
-            projectElement.style.position = '';
-            projectElement.style.top = '';
-            projectElement.style.left = '';
-            projectElement.style.width = '';
-            projectElement.style.height = '';
-            projectElement.style.overflowY = '';
-        }
+        projectElement.style.background = '#F4F0E7';
+        projectElement.style.zIndex = '10001';
+        projectElement.style.position = 'fixed';
+        projectElement.style.top = '0';
+        projectElement.style.left = '0';
+        projectElement.style.width = '100%';
+        projectElement.style.height = '100%';
+        projectElement.style.overflowY = 'auto';
     }
     // Hide both dog and lying dog in project mode
     if (dog) dog.style.display = 'none';
