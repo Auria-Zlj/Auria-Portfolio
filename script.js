@@ -1834,11 +1834,13 @@ function showProjectsView() {
 // Show project detail view
 function showProjectView(projectId) {
     pageMode = 'project';
+    
+    // Hide all views
     hideAllViews();
-    // Hide all project views
-    document.querySelectorAll('.project-view').forEach(function(div){ div.style.display = 'none'; });
-    // Show the requested project view
-    const projectElement = document.getElementById(projectId);
+    
+    // Show project view
+    const projectElement = document.getElementById('project1');
+    
     if (projectElement) {
         projectElement.style.display = 'block';
         projectElement.style.background = '#F4F0E7';
@@ -1850,9 +1852,10 @@ function showProjectView(projectId) {
         projectElement.style.height = '100%';
         projectElement.style.overflowY = 'auto';
     }
-    // Hide both dog and lying dog in project mode
+    
+    // Hide dog and show lying dog
     if (dog) dog.style.display = 'none';
-    if (lyingDog) lyingDog.style.display = 'none';
+    if (lyingDog) lyingDog.style.display = 'block';
 }
 
 // Hide all views
