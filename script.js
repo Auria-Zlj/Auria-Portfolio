@@ -646,13 +646,29 @@ function switchToAboutMode() {
     pageMode = 'about';
     console.log('Switching to about mode...');
     
+    // Hide all project detail views
+    document.querySelectorAll('.project-view').forEach(function(div){ 
+        div.style.display = 'none'; 
+    });
+    
     // Hide projects view
-    projectsView.classList.remove('active');
+    if (projectsView) {
+        projectsView.style.display = 'none';
+        projectsView.classList.remove('active');
+    }
+    
+    // Reset scroll
+    try { window.scrollTo(0, 0); } catch (_) {}
     
     // Show about me view
     if (aboutMeView) {
+        aboutMeView.style.display = 'block';
         aboutMeView.classList.add('active');
     }
+    
+    // Hide both dogs
+    if (dog) dog.style.display = 'none';
+    if (lyingDog) lyingDog.style.display = 'none';
 }
 
 // Switch back to Projects mode from About
@@ -1797,65 +1813,150 @@ document.addEventListener('DOMContentLoaded', () => {
 function showProjectsView() {
     pageMode = 'projects';
     
+    // Hide all project detail views
+    document.querySelectorAll('.project-view').forEach(function(div){ 
+        div.style.display = 'none';
+    });
+    
     // Hide all views
     hideAllViews();
     
-    // Show projects view
+    // Reset scroll
+    try { window.scrollTo(0, 0); } catch (_) {}
+    try { history.replaceState(null, '', window.location.pathname); } catch (_) {}
+    
+    // Show projects view - directly, no animation
     if (projectsView) {
+        // Temporarily disable transition for instant display
+        projectsView.style.transition = 'none';
         projectsView.style.display = 'block';
         projectsView.classList.add('active');
+        projectsView.style.opacity = '1';
+        projectsView.style.transform = 'translateY(0)';
+        // Re-enable transition after a tiny delay (for future animations)
+        setTimeout(() => {
+            projectsView.style.transition = '';
+        }, 50);
     }
     
-    // Hide dog and show lying dog
-    if (dog) dog.style.display = 'none';
-    if (lyingDog) lyingDog.style.display = 'block';
-
-    // Ensure bottom "Who's Behind" section is visible when returning
-    if (whoBehind) {
-        whoBehind.classList.add('active');
-        // small timeout to adapt sizing after layout change
+    // Hide dog and show lying dog - directly, no animation
+    if (dog) {
+        dog.style.display = 'none';
+    }
+    if (lyingDog) {
+        // Temporarily disable transition for instant display
+        lyingDog.style.transition = 'none';
+        lyingDog.style.display = 'block';
+        lyingDog.style.opacity = '1';
+        lyingDog.style.visibility = 'visible';
+        lyingDog.style.right = 'clamp(20px, 5vw, 60px)';
+        // Remove animation class to prevent animation
+        lyingDog.classList.remove('slide-in');
+        // Re-enable transition after a tiny delay (for future animations)
         setTimeout(() => {
-            try { adaptButtonSize(); } catch (_) {}
-        }, 100);
+            lyingDog.style.transition = '';
+        }, 50);
     }
 
-    // Ensure chapters carousel (if present) is active again
+    // Ensure bottom "Who's Behind" section is visible when returning - directly, no animation
+    if (whoBehind) {
+        // Remove ALL classes first to reset any animation state
+        whoBehind.classList.remove('active', 'instant-show');
+        
+        // Force remove ALL transitions using setProperty with important
+        whoBehind.style.setProperty('transition', 'none', 'important');
+        whoBehind.style.setProperty('-webkit-transition', 'none', 'important');
+        whoBehind.style.setProperty('-moz-transition', 'none', 'important');
+        whoBehind.style.setProperty('-o-transition', 'none', 'important');
+        whoBehind.style.setProperty('animation', 'none', 'important');
+        whoBehind.style.setProperty('-webkit-animation', 'none', 'important');
+        whoBehind.style.setProperty('-moz-animation', 'none', 'important');
+        whoBehind.style.setProperty('-o-animation', 'none', 'important');
+        
+        // Force browser to apply the transition removal
+        void whoBehind.offsetHeight;
+        
+        // Now set all display styles at once with important flags
+        whoBehind.style.setProperty('display', 'block', 'important');
+        whoBehind.style.setProperty('opacity', '1', 'important');
+        whoBehind.style.setProperty('transform', 'translateX(-50%) translateY(0)', 'important');
+        whoBehind.style.setProperty('visibility', 'visible', 'important');
+        
+        // Force browser reflow again
+        void whoBehind.offsetHeight;
+        
+        // Add classes after styles are set
+        whoBehind.classList.add('instant-show', 'active');
+        
+        // Call adaptButtonSize immediately
+        adaptButtonSize();
+    }
+
+    // Ensure chapters carousel (if present) is active again - directly, no animation
     const chaptersCarousel = document.getElementById('chaptersCarousel');
     if (chaptersCarousel) {
         chaptersCarousel.classList.add('active');
+        chaptersCarousel.style.opacity = '1';
+        chaptersCarousel.style.display = 'block';
     }
 
-    // Also reactivate orbit/cards/grid so the page matches the main projects scene
-    if (sideOrbit) sideOrbit.classList.add('active');
-    if (card3d) card3d.classList.add('run');
-    if (projectsGrid) projectsGrid.classList.add('active');
+    // Also reactivate orbit/cards/grid so the page matches the main projects scene - directly, no animation
+    if (sideOrbit) {
+        sideOrbit.classList.add('active');
+        sideOrbit.style.opacity = '1';
+    }
+    if (card3d) {
+        card3d.classList.add('run');
+    }
+    if (projectsGrid) {
+        projectsGrid.classList.add('active');
+        projectsGrid.style.opacity = '1';
+    }
 }
 
 // Show project detail view
 function showProjectView(projectId) {
     pageMode = 'project';
-    
-    // Hide all views
     hideAllViews();
-    
-    // Show project view
-    const projectElement = document.getElementById('project1');
-    
+    // Hide all project views
+    document.querySelectorAll('.project-view').forEach(function(div){ div.style.display = 'none'; });
+    // Hide all scroll to bottom buttons first
+    document.querySelectorAll('.scroll-to-bottom-btn').forEach(function(btn){ 
+        btn.classList.remove('show');
+        btn.style.display = 'none';
+    });
+    // Show the requested project view
+    const projectElement = document.getElementById(projectId);
     if (projectElement) {
         projectElement.style.display = 'block';
-        projectElement.style.background = '#F4F0E7';
-        projectElement.style.zIndex = '10001';
-        projectElement.style.position = 'fixed';
-        projectElement.style.top = '0';
-        projectElement.style.left = '0';
-        projectElement.style.width = '100%';
-        projectElement.style.height = '100%';
-        projectElement.style.overflowY = 'auto';
+        // Show corresponding scroll button
+        const buttonId = `scrollToBottomBtn${projectId.slice(-1)}`;
+        const scrollButton = document.getElementById(buttonId);
+        if (scrollButton) {
+            scrollButton.style.display = 'flex';
+        }
+        // Special handling for project3 (MushRoommate) - no fixed positioning
+        if(projectId !== 'project3') {
+            projectElement.style.background = '#f5f0e7';
+            projectElement.style.zIndex = '10001';
+            projectElement.style.position = 'fixed';
+            projectElement.style.top = '0';
+            projectElement.style.left = '0';
+            projectElement.style.width = '100%';
+            projectElement.style.height = '100%';
+            projectElement.style.overflowY = 'auto';
+            // Scroll project element to top
+            projectElement.scrollTop = 0;
+        } else {
+            // For project3, scroll window to top
+            window.scrollTo(0, 0);
+        }
+        // Also scroll window to top as backup
+        window.scrollTo(0, 0);
     }
-    
-    // Hide dog and show lying dog
+    // Hide both dog and lying dog in project mode
     if (dog) dog.style.display = 'none';
-    if (lyingDog) lyingDog.style.display = 'block';
+    if (lyingDog) lyingDog.style.display = 'none';
 }
 
 // Hide all views
@@ -1863,4 +1964,96 @@ function hideAllViews() {
     if (projectsView) projectsView.style.display = 'none';
     if (aboutMeView) aboutMeView.style.display = 'none';
     if (projectView) projectView.style.display = 'none';
+    // Hide all project detail views
+    document.querySelectorAll('.project-view').forEach(function(div){ 
+        div.style.display = 'none'; 
+    });
+    // Hide all scroll to bottom buttons
+    document.querySelectorAll('.scroll-to-bottom-btn').forEach(function(btn){ 
+        btn.classList.remove('show');
+        btn.style.display = 'none';
+    });
 }
+
+// ========================================
+// SCROLL TO BOTTOM BUTTON FUNCTIONALITY
+// ========================================
+
+// Scroll to bottom function
+function scrollToBottom(projectId) {
+    const projectElement = document.getElementById(projectId);
+    if (!projectElement) return;
+    
+    if (projectId === 'project3') {
+        // For project3, scroll window to bottom
+        window.scrollTo({
+            top: document.documentElement.scrollHeight,
+            behavior: 'smooth'
+        });
+    } else {
+        // For project1 and project2, scroll the project element to bottom
+        projectElement.scrollTo({
+            top: projectElement.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
+}
+
+// Handle scroll event for project views
+function handleProjectScroll(projectId) {
+    const projectElement = document.getElementById(projectId);
+    const button = document.getElementById(`scrollToBottomBtn${projectId.slice(-1)}`);
+    
+    if (!projectElement || !button) return;
+    
+    let scrollTop, scrollHeight, clientHeight;
+    
+    if (projectId === 'project3') {
+        // For project3, check window scroll
+        scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        scrollHeight = document.documentElement.scrollHeight;
+        clientHeight = window.innerHeight;
+    } else {
+        // For project1 and project2, check project element scroll
+        scrollTop = projectElement.scrollTop;
+        scrollHeight = projectElement.scrollHeight;
+        clientHeight = projectElement.clientHeight;
+    }
+    
+    // Show button when scrolled more than 300px from top
+    if (scrollTop > 300 && scrollTop < scrollHeight - clientHeight - 100) {
+        button.classList.add('show');
+    } else {
+        button.classList.remove('show');
+    }
+}
+
+// Setup scroll listeners for all project views
+function setupScrollToBottomButtons() {
+    // Setup for project1
+    const project1 = document.getElementById('project1');
+    if (project1) {
+        project1.addEventListener('scroll', () => handleProjectScroll('project1'));
+    }
+    
+    // Setup for project2
+    const project2 = document.getElementById('project2');
+    if (project2) {
+        project2.addEventListener('scroll', () => handleProjectScroll('project2'));
+    }
+    
+    // Setup for project3 (uses window scroll)
+    window.addEventListener('scroll', () => {
+        if (pageMode === 'project') {
+            const project3 = document.getElementById('project3');
+            if (project3 && project3.style.display !== 'none') {
+                handleProjectScroll('project3');
+            }
+        }
+    });
+}
+
+// Initialize scroll to bottom buttons when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    setupScrollToBottomButtons();
+});
