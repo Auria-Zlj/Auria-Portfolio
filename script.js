@@ -21,6 +21,139 @@ const whoBehindButton = document.getElementById('whoBehindButton');
 const backToProjectsButton = document.getElementById('backToProjectsButton');
 const homeButton = document.getElementById('homeButton');
 
+// Timeline management for Who's Behind button
+let whoBehindTimers = [];
+let whoBehindHasAnimated = false;
+let whoBehindOuterTimer = null;
+
+function clearWhoBehindTimeline() {
+    if (whoBehindTimers.length) {
+        whoBehindTimers.forEach((timerId) => clearTimeout(timerId));
+        whoBehindTimers = [];
+    }
+
+    if (whoBehindOuterTimer) {
+        clearTimeout(whoBehindOuterTimer);
+        whoBehindOuterTimer = null;
+    }
+}
+
+function resetWhoBehindInlineStyles() {
+    if (!whoBehind) return;
+
+    const inlineProps = [
+        'display',
+        'opacity',
+        'visibility',
+        'transform',
+        'bottom',
+        'left',
+        'z-index',
+        'pointer-events',
+        'transition',
+        '-webkit-transition',
+        '-moz-transition',
+        '-o-transition',
+        'animation',
+        '-webkit-animation',
+        '-moz-animation',
+        '-o-animation',
+        'animation-delay',
+        'animation-duration'
+    ];
+
+    inlineProps.forEach((prop) => {
+        whoBehind.style.removeProperty(prop);
+    });
+
+    const button = whoBehind.querySelector('.hand-drawn-button');
+    if (button) {
+        ['transform', 'transition', '-webkit-transition', '-moz-transition', '-o-transition'].forEach((prop) => {
+            button.style.removeProperty(prop);
+        });
+    }
+}
+
+function hideWhoBehind() {
+    if (!whoBehind) return;
+
+    clearWhoBehindTimeline();
+    whoBehind.classList.remove('active', 'instant-show');
+    resetWhoBehindInlineStyles();
+    whoBehind.style.pointerEvents = 'none';
+}
+
+function showWhoBehind({ instant = false, delay = 5400 } = {}) {
+    if (!whoBehind) return;
+
+    if (whoBehindHasAnimated && !instant) {
+        instant = true;
+    }
+
+    clearWhoBehindTimeline();
+
+    if (instant) {
+        resetWhoBehindInlineStyles();
+        const { buttonScale, bottomPosition } = computeWhoBehindResponsiveSettings();
+        whoBehind.classList.remove('active');
+        whoBehind.classList.add('instant-show');
+
+        whoBehind.style.cssText = `
+            position: fixed !important;
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            bottom: ${bottomPosition}px !important;
+            left: 50% !important;
+            transform: translateX(-50%) translateY(0) !important;
+            z-index: 12000 !important;
+            pointer-events: auto !important;
+            transition: none !important;
+            -webkit-transition: none !important;
+            -moz-transition: none !important;
+            -o-transition: none !important;
+            animation: none !important;
+            -webkit-animation: none !important;
+            -moz-animation: none !important;
+            -o-animation: none !important;
+        `;
+        whoBehind.style.pointerEvents = 'auto';
+
+        const button = whoBehind.querySelector('.hand-drawn-button');
+        if (button) {
+            button.style.cssText = `
+                transform: scale(${buttonScale}) !important;
+                transition: none !important;
+                -webkit-transition: none !important;
+                -moz-transition: none !important;
+                -o-transition: none !important;
+            `;
+        }
+
+        whoBehind.classList.add('active');
+        requestAnimationFrame(() => {
+            adaptButtonSize();
+        });
+        console.log('Who Behind button shown instantly');
+        whoBehindHasAnimated = true;
+        return;
+    }
+
+    resetWhoBehindInlineStyles();
+    whoBehind.classList.remove('instant-show', 'active');
+
+    const timeoutId = setTimeout(() => {
+        whoBehind.classList.add('active');
+        adaptButtonSize();
+        whoBehind.style.pointerEvents = 'auto';
+        whoBehind.style.zIndex = '12000';
+        console.log(`Who Behind button activated after ${delay}ms`);
+        whoBehindHasAnimated = true;
+    }, delay);
+
+    whoBehindTimers.push(timeoutId);
+}
+
 // ========================================
 // RESPONSIVE ADAPTATION SYSTEM
 // ========================================
@@ -235,34 +368,54 @@ function adaptChapterCardsSize() {
 function adaptButtonSize() {
     if (!whoBehind) return;
     
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
-    let buttonScale, bottomPosition;
+    const { buttonScale, bottomPosition } = computeWhoBehindResponsiveSettings();
     
-    // Consider both width and height
-    if (screenWidth < 360) {
-        buttonScale = 0.7;
-        bottomPosition = 20;
-    } else if (screenWidth < 480) {
-        buttonScale = 0.8;
-        bottomPosition = screenHeight < 600 ? 40 : 60;
-    } else if (screenWidth < 768) {
-        buttonScale = 0.9;
-        bottomPosition = screenHeight < 700 ? 50 : 70;
-    } else {
-        buttonScale = 1.0;
-        bottomPosition = screenHeight < 800 ? 60 : 80;
-    }
+    // Check if in instant-show mode (returning from project view)
+    const isInstantShow = whoBehind.classList.contains('instant-show');
     
     // Apply position and scale
-    whoBehind.style.bottom = `${bottomPosition}px`;
+    whoBehind.style.setProperty('bottom', `${bottomPosition}px`, 'important');
     
     const button = whoBehind.querySelector('.hand-drawn-button');
     if (button) {
-        button.style.transform = `scale(${buttonScale})`;
+        // In instant-show mode, also disable button transition
+        if (isInstantShow) {
+            button.style.setProperty('transition', 'none', 'important');
+        }
+        button.style.setProperty('transform', `scale(${buttonScale})`, 'important');
     }
     
-    console.log(`Button adapted: scale ${buttonScale}, bottom ${bottomPosition}px`);
+    // In instant-show mode, keep all transitions disabled
+    if (isInstantShow) {
+        whoBehind.style.setProperty('transition', 'none', 'important');
+        whoBehind.style.setProperty('-webkit-transition', 'none', 'important');
+        whoBehind.style.setProperty('-moz-transition', 'none', 'important');
+        whoBehind.style.setProperty('-o-transition', 'none', 'important');
+        whoBehind.style.setProperty('animation', 'none', 'important');
+    }
+    
+    console.log(`Button adapted: scale ${buttonScale}, bottom ${bottomPosition}px${isInstantShow ? ' (instant-show mode)' : ''}`);
+}
+
+function computeWhoBehindResponsiveSettings(width = window.innerWidth, height = window.innerHeight) {
+    let buttonScale;
+    let bottomPosition;
+
+    if (width < 360) {
+        buttonScale = 0.7;
+        bottomPosition = 20;
+    } else if (width < 480) {
+        buttonScale = 0.8;
+        bottomPosition = height < 600 ? 40 : 60;
+    } else if (width < 768) {
+        buttonScale = 0.9;
+        bottomPosition = height < 700 ? 50 : 70;
+    } else {
+        buttonScale = 1.0;
+        bottomPosition = height < 800 ? 60 : 80;
+    }
+
+    return { buttonScale, bottomPosition };
 }
 
 // Master adaptation function
@@ -572,13 +725,12 @@ function switchToProjectsMode() {
     }, 5200);
     
     // 5400ms: Show who's behind section (slide up from bottom)
-    setTimeout(() => {
-        whoBehind.classList.add('active');
-        
-        // Apply responsive adaptation for button
-        setTimeout(() => {
-            adaptButtonSize();
-        }, 100);
+    if (whoBehindOuterTimer) {
+        clearTimeout(whoBehindOuterTimer);
+    }
+    whoBehindOuterTimer = setTimeout(() => {
+        showWhoBehind({ delay: 0 });
+        whoBehindOuterTimer = null;
     }, 5400);
 }
 
@@ -601,7 +753,11 @@ function switchToHomeMode() {
     sideOrbit.classList.remove('active');
     card3d.classList.remove('run');
     projectsGrid.classList.remove('active');
-    whoBehind.classList.remove('active');
+    const hadAnimatedBeforeHide = whoBehindHasAnimated;
+    hideWhoBehind();
+    if (hadAnimatedBeforeHide) {
+        whoBehindHasAnimated = true;
+    }
     
     // Hide about me view
     if (aboutMeView) {
@@ -645,6 +801,8 @@ function switchToAboutMode() {
     
     pageMode = 'about';
     console.log('Switching to about mode...');
+
+    hideWhoBehind();
     
     // Hide all project detail views
     document.querySelectorAll('.project-view').forEach(function(div){ 
@@ -692,6 +850,8 @@ function switchBackToProjects() {
         projectsView.style.display = 'block';
         projectsView.classList.add('active');
     }
+
+    showWhoBehind({ instant: true });
 }
 
 // Animate project cards with stagger
@@ -1858,40 +2018,6 @@ function showProjectsView() {
         }, 50);
     }
 
-    // Ensure bottom "Who's Behind" section is visible when returning - directly, no animation
-    if (whoBehind) {
-        // Remove ALL classes first to reset any animation state
-        whoBehind.classList.remove('active', 'instant-show');
-        
-        // Force remove ALL transitions using setProperty with important
-        whoBehind.style.setProperty('transition', 'none', 'important');
-        whoBehind.style.setProperty('-webkit-transition', 'none', 'important');
-        whoBehind.style.setProperty('-moz-transition', 'none', 'important');
-        whoBehind.style.setProperty('-o-transition', 'none', 'important');
-        whoBehind.style.setProperty('animation', 'none', 'important');
-        whoBehind.style.setProperty('-webkit-animation', 'none', 'important');
-        whoBehind.style.setProperty('-moz-animation', 'none', 'important');
-        whoBehind.style.setProperty('-o-animation', 'none', 'important');
-        
-        // Force browser to apply the transition removal
-        void whoBehind.offsetHeight;
-        
-        // Now set all display styles at once with important flags
-        whoBehind.style.setProperty('display', 'block', 'important');
-        whoBehind.style.setProperty('opacity', '1', 'important');
-        whoBehind.style.setProperty('transform', 'translateX(-50%) translateY(0)', 'important');
-        whoBehind.style.setProperty('visibility', 'visible', 'important');
-        
-        // Force browser reflow again
-        void whoBehind.offsetHeight;
-        
-        // Add classes after styles are set
-        whoBehind.classList.add('instant-show', 'active');
-        
-        // Call adaptButtonSize immediately
-        adaptButtonSize();
-    }
-
     // Ensure chapters carousel (if present) is active again - directly, no animation
     const chaptersCarousel = document.getElementById('chaptersCarousel');
     if (chaptersCarousel) {
@@ -1912,11 +2038,15 @@ function showProjectsView() {
         projectsGrid.classList.add('active');
         projectsGrid.style.opacity = '1';
     }
+
+    // Ensure bottom "Who's Behind" section is visible when returning - force immediate display
+    showWhoBehind({ instant: true });
 }
 
 // Show project detail view
 function showProjectView(projectId) {
     pageMode = 'project';
+    hideWhoBehind();
     hideAllViews();
     // Hide all project views
     document.querySelectorAll('.project-view').forEach(function(div){ div.style.display = 'none'; });
@@ -1961,6 +2091,11 @@ function showProjectView(projectId) {
 
 // Hide all views
 function hideAllViews() {
+    const hadAnimatedBeforeHide = whoBehindHasAnimated;
+    hideWhoBehind();
+    if (hadAnimatedBeforeHide) {
+        whoBehindHasAnimated = true;
+    }
     if (projectsView) projectsView.style.display = 'none';
     if (aboutMeView) aboutMeView.style.display = 'none';
     if (projectView) projectView.style.display = 'none';

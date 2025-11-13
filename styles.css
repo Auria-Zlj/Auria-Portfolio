@@ -3178,15 +3178,15 @@ body {
 
 /* Who's Behind Section - Button Style */
 .who-behind {
-    position: absolute;
-    bottom: clamp(120px, 20vh, 180px); /* 增加bottom，为新狗留空间 */
+    position: fixed;
+    bottom: clamp(120px, 20vh, 180px); /* 默认偏移，JS会根据屏幕调整 */
     left: 50%;
     transform: translateX(-50%) translateY(100vh);
     text-align: center;
     opacity: 0;
     transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    z-index: 20; /* 确保在最上面 */
-    pointer-events: auto;
+    z-index: 12000; /* 高于项目详情页 */
+    pointer-events: none; /* 默认不遮挡下层元素 */
 }
 
 /* When instant-show class is present, remove all transitions and force immediate display */
@@ -3202,7 +3202,10 @@ body {
     -webkit-animation: none !important;
     -moz-animation: none !important;
     -o-animation: none !important;
+    animation-delay: 0s !important;
+    animation-duration: 0s !important;
     display: block !important;
+    pointer-events: auto !important;
 }
 
 .who-behind.instant-show.active {
@@ -3213,11 +3216,26 @@ body {
     -webkit-transition: none !important;
     -moz-transition: none !important;
     -o-transition: none !important;
+    animation: none !important;
+    -webkit-animation: none !important;
+    -moz-animation: none !important;
+    -o-animation: none !important;
+    animation-delay: 0s !important;
+    animation-duration: 0s !important;
 }
 
 .who-behind.active {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+}
+
+/* Ensure active class doesn't override instant-show transition settings */
+.who-behind.instant-show.active {
+    transition: none !important;
+    -webkit-transition: none !important;
+    -moz-transition: none !important;
+    -o-transition: none !important;
 }
 
 /* Button wrapper for who-behind section */
