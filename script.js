@@ -2063,26 +2063,20 @@ function showProjectView(projectId) {
         const buttonId = `scrollToBottomBtn${projectId.slice(-1)}`;
         const scrollButton = document.getElementById(buttonId);
         if (scrollButton) {
+            scrollButton.classList.remove('show');
             scrollButton.style.display = 'flex';
         }
         // Special handling for project3 (MushRoommate) - no fixed positioning
-        if(projectId !== 'project3') {
-            projectElement.style.background = '#f5f0e7';
-            projectElement.style.zIndex = '10001';
-            projectElement.style.position = 'fixed';
-            projectElement.style.top = '0';
-            projectElement.style.left = '0';
-            projectElement.style.width = '100%';
-            projectElement.style.height = '100%';
-            projectElement.style.overflowY = 'auto';
-            // Scroll project element to top
-            projectElement.scrollTop = 0;
-        } else {
-            // For project3, scroll window to top
-            window.scrollTo(0, 0);
-        }
-        // Also scroll window to top as backup
-        window.scrollTo(0, 0);
+        projectElement.style.background = '#f5f0e7';
+        projectElement.style.zIndex = '10001';
+        projectElement.style.position = 'fixed';
+        projectElement.style.top = '0';
+        projectElement.style.left = '0';
+        projectElement.style.width = '100%';
+        projectElement.style.height = '100%';
+        projectElement.style.overflowY = 'auto';
+        // Scroll project element to top
+        projectElement.scrollTop = 0;
     }
     // Hide both dog and lying dog in project mode
     if (dog) dog.style.display = 'none';
@@ -2119,19 +2113,10 @@ function scrollToBottom(projectId) {
     const projectElement = document.getElementById(projectId);
     if (!projectElement) return;
     
-    if (projectId === 'project3') {
-        // For project3, scroll window to bottom
-        window.scrollTo({
-            top: document.documentElement.scrollHeight,
-            behavior: 'smooth'
-        });
-    } else {
-        // For project1 and project2, scroll the project element to bottom
-        projectElement.scrollTo({
-            top: projectElement.scrollHeight,
-            behavior: 'smooth'
-        });
-    }
+    projectElement.scrollTo({
+        top: projectElement.scrollHeight,
+        behavior: 'smooth'
+    });
 }
 
 // Handle scroll event for project views
@@ -2141,19 +2126,9 @@ function handleProjectScroll(projectId) {
     
     if (!projectElement || !button) return;
     
-    let scrollTop, scrollHeight, clientHeight;
-    
-    if (projectId === 'project3') {
-        // For project3, check window scroll
-        scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        scrollHeight = document.documentElement.scrollHeight;
-        clientHeight = window.innerHeight;
-    } else {
-        // For project1 and project2, check project element scroll
-        scrollTop = projectElement.scrollTop;
-        scrollHeight = projectElement.scrollHeight;
-        clientHeight = projectElement.clientHeight;
-    }
+    const scrollTop = projectElement.scrollTop;
+    const scrollHeight = projectElement.scrollHeight;
+    const clientHeight = projectElement.clientHeight;
     
     // Show button when scrolled more than 300px from top
     if (scrollTop > 300 && scrollTop < scrollHeight - clientHeight - 100) {
@@ -2165,25 +2140,10 @@ function handleProjectScroll(projectId) {
 
 // Setup scroll listeners for all project views
 function setupScrollToBottomButtons() {
-    // Setup for project1
-    const project1 = document.getElementById('project1');
-    if (project1) {
-        project1.addEventListener('scroll', () => handleProjectScroll('project1'));
-    }
-    
-    // Setup for project2
-    const project2 = document.getElementById('project2');
-    if (project2) {
-        project2.addEventListener('scroll', () => handleProjectScroll('project2'));
-    }
-    
-    // Setup for project3 (uses window scroll)
-    window.addEventListener('scroll', () => {
-        if (pageMode === 'project') {
-            const project3 = document.getElementById('project3');
-            if (project3 && project3.style.display !== 'none') {
-                handleProjectScroll('project3');
-            }
+    ['project1', 'project2', 'project3'].forEach((projectId) => {
+        const projectEl = document.getElementById(projectId);
+        if (projectEl) {
+            projectEl.addEventListener('scroll', () => handleProjectScroll(projectId));
         }
     });
 }
