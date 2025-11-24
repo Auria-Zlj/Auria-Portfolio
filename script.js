@@ -440,29 +440,40 @@ window.addEventListener('resize', () => {
 // ========================================
 // CHAPTERS CAROUSEL - Simple wheel conversion
 // ========================================
-window.addEventListener('load', () => {
-    setTimeout(() => {
-        const viewport = document.querySelector('.chapters-viewport');
-        const chapters = document.querySelector('.chapters');
-        if (viewport && chapters) {
-            // Listen to wheel events on both viewport and chapters for larger scroll area
-            const handleWheel = (e) => {
-                if (chapters.classList.contains('active')) {
-                    // Only prevent default and convert if it's vertical scroll
-                    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-                        e.preventDefault();
-                        viewport.scrollLeft += e.deltaY * 0.9;
-                    }
-                }
-            };
-            
-            viewport.addEventListener('wheel', handleWheel, { passive: false });
-            chapters.addEventListener('wheel', handleWheel, { passive: false });
-            
-            console.log('Chapters wheel scroll initialized - expanded area');
-        }
-    }, 5000);
-});
+let chaptersWheelInitialized = false;
+
+function initChaptersWheel() {
+    if (chaptersWheelInitialized) return;
+
+    const viewport = document.querySelector('.chapters-viewport');
+    const chapters = document.querySelector('.chapters');
+    if (!viewport || !chapters) return;
+
+    const handleWheel = (e) => {
+        if (pageMode !== 'projects') return;
+        if (!chapters.classList.contains('active')) return;
+
+        // If horizontal intent is stronger, let default behavior happen
+        if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+
+        e.preventDefault();
+        const deltaY = e.deltaY;
+        const step = deltaY * 0.85;
+        let target = viewport.scrollLeft + step;
+        const maxScroll = viewport.scrollWidth - viewport.clientWidth;
+        target = Math.max(0, Math.min(target, maxScroll));
+        viewport.scrollTo({
+            left: target,
+            behavior: 'smooth'
+        });
+    };
+
+    viewport.addEventListener('wheel', handleWheel, { passive: false });
+    chapters.addEventListener('wheel', handleWheel, { passive: false });
+
+    chaptersWheelInitialized = true;
+    console.log('Chapters wheel scroll initialized');
+}
 
 // Mobile Navigation Toggle
 const navToggle = document.getElementById('nav-toggle');
@@ -1182,8 +1193,8 @@ window.addEventListener('load', () => {
             if (angle > maxAngle) angle = maxAngle;
             if (angle < minAngle) angle = minAngle;
             
-            // Maximum movement radius - increased for more responsive tracking
-            const radius = 7;
+            // Maximum movement radius - adaptive based on eye size (13% of eye layer width)
+            const radius = eyeRect.width * 0.13;
             
             const moveX = Math.cos(angle) * radius;
             const moveY = Math.sin(angle) * radius;
@@ -2024,6 +2035,7 @@ function showProjectsView() {
         chaptersCarousel.classList.add('active');
         chaptersCarousel.style.opacity = '1';
         chaptersCarousel.style.display = 'block';
+        initChaptersWheel();
     }
 
     // Also reactivate orbit/cards/grid so the page matches the main projects scene - directly, no animation
@@ -2151,4 +2163,5 @@ function setupScrollToBottomButtons() {
 // Initialize scroll to bottom buttons when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     setupScrollToBottomButtons();
+    initChaptersWheel();
 });

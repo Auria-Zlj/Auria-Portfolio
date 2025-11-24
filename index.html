@@ -31,40 +31,18 @@
             <!-- Dog and Cards Container -->
             <div class="dog-cards-container" id="dogCardsContainer">
                     <div class="dog" id="dog">
-              <!-- 垂耳 -->
-              <div class="ear left"></div>
-              <div class="ear right"></div>
-
-              <!-- 头（固定，不旋转） -->
-              <div class="head">
-                <!-- 眼睛 + 瞳孔追踪 -->
-                <div class="eye left">
-                  <div class="pupil" id="leftPupil"></div>
-                </div>
-                <div class="eye right">
-                  <div class="pupil" id="rightPupil"></div>
-                </div>
-
-                <!-- 嘴口 + 鼻子轻"嗅" -->
-                <div class="snout">
-                  <div class="nose"></div>
-                </div>
+              <!-- 尾巴（在狗狗身体后面） -->
+              <img src="image/dog1tail.png" alt="Tail" class="dog-tail" />
+              
+              <!-- dog1.png 作为基础图片 -->
+              <img src="image/dog1.png" alt="Dog" class="dog-image" />
+              
+              <!-- 眼睛覆盖层（保持原有ID，JS无需改动） -->
+              <div class="eye-layer left-eye-layer">
+                <div class="pupil" id="leftPupil"></div>
               </div>
-
-              <!-- 尾巴（在身体后面） -->
-              <div class="tail">
-                <div class="tail-seg"></div>
-                <div class="tail-tip"></div>
-              </div>
-
-              <!-- 身体 -->
-              <div class="body">
-                <div class="legs">
-                  <div class="leg"></div>
-                  <div class="leg"></div>
-                  <div class="leg"></div>
-                  <div class="leg"></div>
-                </div>
+              <div class="eye-layer right-eye-layer">
+                <div class="pupil" id="rightPupil"></div>
               </div>
             </div>
 
