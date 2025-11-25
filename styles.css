@@ -2073,59 +2073,157 @@ body {
     overflow-y: auto; /* Allow scrolling within the projects view */
 }
 
+/* Flying Ball - flies from right, bounces, then dog chases */
+.flying-ball {
+    position: fixed;
+    right: -100px;
+    bottom: 120px;
+    width: 60px;
+    height: 60px;
+    opacity: 0;
+    visibility: hidden;
+    z-index: 6; /* Above dog */
+    pointer-events: none;
+    /* 硬件加速优化 */
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+.flying-ball.active {
+    opacity: 1;
+    visibility: visible;
+    will-change: transform, right;
+    animation: ballFlySimple 4s linear forwards;
+}
+
+/* 完全丝滑 - 从高处抛出，弹一次，无缝滚走 */
+@keyframes ballFlySimple {
+    0% { 
+        right: -100px; 
+        transform: translateY(-120px) rotate(0deg);
+    }
+    20% { 
+        right: 28%;
+        transform: translateY(0) rotate(-500deg);
+    }
+    35% { 
+        right: 50%;
+        transform: translateY(-50px) rotate(-900deg);
+    }
+    /* 第二次落地 - 更渐进的过渡 */
+    43% { 
+        right: 62%;
+        transform: translateY(-18px) rotate(-1150deg);
+    }
+    47% { 
+        right: 67%;
+        transform: translateY(-5px) rotate(-1260deg);
+    }
+    51% { 
+        right: 72%;
+        transform: translateY(0) rotate(-1370deg);
+    }
+    /* 滚动阶段 - 完全贴地，快速旋转 */
+    60% { 
+        right: 80%;
+        transform: translateY(0) rotate(-1750deg);
+    }
+    70% { 
+        right: 88%;
+        transform: translateY(0) rotate(-2140deg);
+    }
+    80% { 
+        right: 96%;
+        transform: translateY(0) rotate(-2530deg);
+    }
+    90% { 
+        right: 103%;
+        transform: translateY(0) rotate(-2750deg);
+    }
+    100% { 
+        right: 110%;
+        transform: translateY(0) rotate(-2880deg);
+    }
+}
+
 /* Lying Dog - Exact copy of landing page dog but lying down and bigger */
 .lying-dog {
     position: fixed;
-    right: -200px;
-    bottom: 80px;
-    width: 180px;
-    height: 210px;
+    right: -280px;
+    bottom: 10px; /* 往上移 */
+    height: 260px; /* 进一步增大尺寸 */
+    width: auto; /* 自动宽度，不变形 */
     opacity: 0; /* Hidden by default */
     visibility: hidden; /* Hidden by default */
-    transform: translateX(0) rotate(-15deg);
+    transform: translateX(0) rotate(0deg);
     transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     z-index: 5; /* 降低z-index，让卡片和按钮在上面 */
     transform-origin: center center;
+    object-fit: contain; /* 确保不变形 */
+    /* 硬件加速优化 */
+    backface-visibility: hidden;
+    perspective: 1000px;
 }
 
-/* 眼珠子在中间停半秒，然后左右左，每个停0.2秒，最后回到中间 */
-@keyframes eyeLookAround {
-    0% {
-        transform: translate(-50%, -50%) translate(0, 0);
-    }
-    20% {
-        transform: translate(-50%, -50%) translate(0, 0);
-    }
-    35% {
-        transform: translate(-50%, -50%) translate(-8px, 0);
-    }
-    45% {
-        transform: translate(-50%, -50%) translate(-8px, 0);
-    }
-    60% {
-        transform: translate(-50%, -50%) translate(8px, 0);
-    }
-    70% {
-        transform: translate(-50%, -50%) translate(8px, 0);
-    }
-    85% {
-        transform: translate(-50%, -50%) translate(-8px, 0);
-    }
-    95% {
-        transform: translate(-50%, -50%) translate(-8px, 0);
-    }
-    100% {
-        transform: translate(-50%, -50%) translate(0, 0);
-    }
-}
+/* Eye look around animation removed - GIF handles animation */
 
 /* 新狗从右边滑出来的动画 */
+/* Dog chasing the ball - runs left following ball, then walks back to corner */
+/* 狗水平移动 - 流畅匀速 */
+@keyframes dogRunHorizontal {
+    0% {
+        right: -280px;
+        opacity: 0;
+        visibility: hidden;
+    }
+    1% {
+        opacity: 1;
+        visibility: visible;
+    }
+    100% {
+        right: 110%;
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+/* 狗上下弹跳 - 轻微的跑步节奏 */
+@keyframes dogRunBounce {
+    0%, 100% {
+        transform: translateY(0) scale(var(--dog-scale, 1.0));
+    }
+    50% {
+        transform: translateY(-8px) scale(var(--dog-scale, 1.0));
+    }
+}
+
+/* Old dogChaseIn kept for compatibility */
+@keyframes dogChaseIn {
+    0% {
+        right: -200px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(0) rotate(0deg) scale(var(--dog-scale, 1.0));
+    }
+    3% {
+        opacity: 1;
+        visibility: visible;
+    }
+    100% {
+        right: 110%;
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0) rotate(0deg) scale(var(--dog-scale, 1.0));
+    }
+}
+
+/* Old dogSlideIn kept for compatibility */
 @keyframes dogSlideIn {
     0% {
         right: -200px;
         opacity: 0;
         visibility: hidden;
-        transform: translateX(0) rotate(-15deg) scale(var(--dog-scale, 1.0));
+        transform: translateX(0) rotate(0deg) scale(var(--dog-scale, 1.0));
     }
     1% {
         opacity: 1;
@@ -2135,166 +2233,24 @@ body {
         right: clamp(20px, 5vw, 60px);
         opacity: 1;
         visibility: visible;
-        transform: translateX(0) rotate(-15deg) scale(var(--dog-scale, 1.0));
+        transform: translateX(0) rotate(0deg) scale(var(--dog-scale, 1.0));
     }
 }
 
 .lying-dog.slide-in {
-    right: -200px; /* Start off-screen to the right */
-    bottom: 50px;
-    width: 180px;
-    height: 210px;
+    right: -280px; /* Start off-screen to the right */
+    bottom: 10px; /* 与基础类保持一致 */
+    height: 260px; /* 进一步增大尺寸 */
+    width: auto; /* 自动宽度，保持比例 */
     /* opacity and visibility will be controlled by animation */
     /* transform will be set by JavaScript for responsive scaling */
-    animation: dogSlideIn 1s ease-out 0.5s forwards;
+    /* Dog chases ball - slower and smoother */
+    animation: 
+        dogRunHorizontal 5s linear forwards,
+        dogRunBounce 0.5s ease-in-out 0s 10;
 }
 
-/* 眼珠子在狗滑出来后开始左右左，每个停0.2秒，最后回到中间 */
-.lying-dog.slide-in .pupil {
-    animation: eyeLookAround 2.5s ease-in-out 1.5s;
-}
-
-/* 趴着狗使用和landing page狗完全相同的样式，只是调整位置 */
-.lying-dog .ear {
-    position: absolute;
-    top: 22px;
-    width: 42px;
-    height: 74px;
-    background: #C9964B;
-    border-radius: 24px;
-    transform-origin: top center;
-    box-shadow: inset 0 -4px 0 rgba(0,0,0,.06);
-    animation: earSwing 2.4s ease-in-out infinite, idle 2.2s ease-in-out infinite;
-    z-index: 1;
-}
-
-.lying-dog .ear.left {
-    left: 20px;
-}
-
-.lying-dog .ear.right {
-    right: 20px;
-}
-
-.lying-dog .head {
-    position: absolute;
-    top: 8px;
-    left: 50%;
-    width: 116px;
-    height: 102px;
-    transform: translateX(-50%);
-    background: #E4B872;
-    border-radius: 60px;
-    z-index: 2;
-    box-shadow: inset 0 0 2px rgba(255,255,255,0.3), 0 1px 2px rgba(0,0,0,0.1);
-}
-
-.lying-dog .eye {
-    position: absolute;
-    top: 30px;
-    width: 22px;
-    height: 25px;
-    background: #F1E5CC;
-    border-radius: 50%;
-    overflow: hidden;
-}
-
-.lying-dog .eye.left {
-    left: 26px;
-}
-
-.lying-dog .eye.right {
-    right: 26px;
-}
-
-.lying-dog .pupil {
-    position: absolute;
-    top: 33%;
-    left: 50%;
-    width: 12px;
-    height: 12px;
-    background: #222;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: all 0.1s ease;
-}
-
-.lying-dog .snout {
-    position: absolute;
-    left: 50%;
-    bottom: 10px;
-    width: 64px;
-    height: 48px;
-    background: #F1E5CC;
-    border-radius: 28px;
-    transform: translateX(-50%);
-    z-index: 3;
-}
-
-.lying-dog .nose {
-    position: absolute;
-    left: 50%;
-    top: 8px;
-    width: 18px;
-    height: 12px;
-    border-radius: 8px;
-    background: #333;
-    transform: translateX(-50%);
-    animation: sniff 1.6s ease-in-out infinite;
-}
-
-.lying-dog .body {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 140px;
-    height: 108px;
-    background: #D9A85E;
-    border-radius: 72px 72px 50px 50px;
-    z-index: 1;
-    animation: idle 2.2s ease-in-out infinite;
-}
-
-.lying-dog .legs {
-    position: absolute;
-    bottom: -12px;
-    left: 10px;
-    right: 10px;
-    display: flex;
-    justify-content: space-between;
-}
-
-.lying-dog .leg {
-    width: 18px;
-    height: 43px;
-    background: #E4B872;
-    border-radius: 10px;
-    animation: idle 2.2s ease-in-out infinite;
-}
-
-.lying-dog .leg:nth-child(1) { animation-delay: -0.1s; }
-.lying-dog .leg:nth-child(2) { animation-delay: -0.2s; }
-.lying-dog .leg:nth-child(3) { animation-delay: -0.3s; }
-.lying-dog .leg:nth-child(4) { animation-delay: -0.4s; }
-
-.lying-dog .tail {
-    position: absolute;
-    right: -16px;
-    bottom: 32px;
-    width: 55px;
-    height: 18px;
-    background: linear-gradient(90deg, #d7a85b 0%, #b9823c 90%);
-    border-radius: 14px 20px 20px 14px;
-    transform-origin: left center;
-    animation: wag 1.6s ease-in-out infinite, idle 2.2s ease-in-out infinite;
-    z-index: 0;
-}
-
-.lying-dog .tail-seg,
-.lying-dog .tail-tip {
-    display: none;
-}
+/* Lying dog as GIF - no child element styles needed */
 
 .projects-view.active {
     opacity: 1;

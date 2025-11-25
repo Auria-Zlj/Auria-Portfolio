@@ -182,44 +182,11 @@
         </div>
       </div>
 
-      <!-- New Lying Dog (moved outside projects-view to avoid container slide-down) -->
-      <div class="lying-dog" id="lyingDog">
-          <!-- 垂耳 -->
-          <div class="ear left"></div>
-          <div class="ear right"></div>
-
-          <!-- 头（固定，不旋转） -->
-          <div class="head">
-            <!-- 眼睛 + 瞳孔追踪 -->
-            <div class="eye left">
-              <div class="pupil" id="leftPupilLying"></div>
-            </div>
-            <div class="eye right">
-              <div class="pupil" id="rightPupilLying"></div>
-            </div>
-
-            <!-- 嘴口 + 鼻子轻"嗅" -->
-            <div class="snout">
-              <div class="nose"></div>
-            </div>
-          </div>
-
-          <!-- 尾巴（在身体后面） -->
-          <div class="tail">
-            <div class="tail-seg"></div>
-            <div class="tail-tip"></div>
-          </div>
-
-          <!-- 身体 -->
-          <div class="body">
-            <div class="legs">
-              <div class="leg"></div>
-              <div class="leg"></div>
-              <div class="leg"></div>
-              <div class="leg"></div>
-            </div>
-          </div>
-        </div>
+      <!-- Ball that flies and bounces before dog appears -->
+      <img src="image/ball.png" alt="Ball" class="flying-ball" id="flyingBall" />
+      
+      <!-- Lying Dog GIF - appears in bottom-right when projects view is active -->
+      <img src="image/dog.gif" alt="Dog" class="lying-dog" id="lyingDog" />
 
       <!-- Projects View (Projects Mode) -->
       <div class="projects-view" id="projectsView">
@@ -612,100 +579,6 @@
         </div>
       </div> <!-- End About Me View -->
      </div>
-
-   <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <img src="image/headIcon.png" alt="Auria Zhang" class="logo-img">
-                <span class="logo-text">Auria Zhang</span>
-            </div>
-            <div class="nav-menu" id="nav-menu">
-                <a href="#home" class="nav-link">Home</a>
-                <a href="#about" class="nav-link">About</a>
-                <a href="#contact" class="nav-link">Contact</a>
-                <a href="#more" class="nav-link">More</a>
-            </div>
-            <div class="nav-toggle" id="nav-toggle">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="hero-container">
-            <h1 class="hero-title">Auria Zhang</h1>
-            <p class="hero-subtitle">
-                <span class="hero-subtitle-light">turns ideas into products that work across</span> <strong>screens,<br>systems, and circuits</strong>.
-            </p>
-            <div class="hero-tags">
-                <span class="tag">Product Design</span>
-                <span class="tag">UI/UX</span>
-                <span class="tag">Web</span>
-                <span class="tag">Interaction</span>
-                <span class="tag">Hardware Prototyping</span>
-            </div>
-        </div>
-        <button class="btn">
-            <div class="scroll"></div>
-        </button>
-    </section>
-
-    <!-- Projects Section removed: using overlay projectsView only -->
-
-    <!-- About Section -->
-    <section id="about" class="about">
-        <div class="container">
-            <h2 class="section-title">About Me</h2>
-            <div class="about-content">
-                <div class="about-text">
-                    <p>
-                        I'm a product designer passionate about creating meaningful experiences that bridge the gap between digital and physical worlds. With expertise in UI/UX design, web development, and hardware prototyping, I specialize in turning complex ideas into intuitive products.
-                    </p>
-                    <p>
-                        My work spans across various domains including healthcare technology, sustainable solutions, and collaborative tools, always with a focus on user-centered design and innovative problem-solving.
-                    </p>
-                </div>
-                <div class="about-image">
-                    <img src="assets/profile-image.png" alt="Auria Zhang Profile" class="profile-img">
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="contact">
-        <div class="container">
-            <h2 class="section-title">Let's Work Together</h2>
-            <div class="contact-content">
-                <div class="contact-text">
-                    <h3>Hire me :)</h3>
-                    <p>I'm always excited to work on new projects and collaborate with amazing teams.</p>
-                </div>
-                <div class="contact-links">
-                    <a href="mailto:hello@auria-ljz.com" class="contact-link">
-                        hello@auria-ljz.com
-                    </a>
-                    <a href="https://linkedin.com/in/auria-zhang" class="contact-link" target="_blank">
-                        LinkedIn
-                    </a>
-                    <a href="https://github.com/auria-zhang" class="contact-link" target="_blank">
-                        GitHub
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2024 by Auria Zhang. All rights reserved.</p>
-        </div>
-    </footer>
 
     <script src="script.js"></script>
 </body>

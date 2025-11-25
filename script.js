@@ -11,8 +11,7 @@ const aboutMeView = document.getElementById('aboutMeView');
 const projectView = document.getElementById('project1');
 const dog = document.getElementById('dog');
 const lyingDog = document.getElementById('lyingDog');
-const leftPupilLying = document.getElementById('leftPupilLying'); // Lying dog pupils
-const rightPupilLying = document.getElementById('rightPupilLying');
+const flyingBall = document.getElementById('flyingBall');
 const sideOrbit = document.getElementById('sideOrbit');
 const card3d = document.getElementById('card3d');
 const projectsGrid = document.getElementById('projectsGrid');
@@ -167,34 +166,34 @@ function adaptLyingDogSize() {
     let scale, bottomPos, rightPos;
     
     // 使用base尺寸180x210，通过scale实现自适应
-    // 始终保持在右下角
+    // 始终保持在右下角，稍低一点
     if (screenWidth < 360) {
         scale = 0.3; // 超小屏
-        bottomPos = '15px';
+        bottomPos = '30px';
         rightPos = '8px';
     } else if (screenWidth < 480) {
         scale = 0.4; // 小屏
-        bottomPos = '20px';
+        bottomPos = '35px';
         rightPos = '10px';
     } else if (screenWidth < 768) {
         scale = screenHeight < 700 ? 0.55 : 0.6; // 中屏，高度矮时更小
-        bottomPos = screenHeight < 700 ? '25px' : '35px';
+        bottomPos = screenHeight < 700 ? '40px' : '50px';
         rightPos = screenHeight < 700 ? '12px' : '18px';
     } else if (screenHeight < 600) {
         scale = 0.65; // 高度矮的时候缩小
-        bottomPos = '30px';
+        bottomPos = '45px';
         rightPos = '20px';
     } else if (screenHeight < 700) {
         scale = 0.75; // 稍微矮的时候
-        bottomPos = '35px';
+        bottomPos = '55px';
         rightPos = '25px';
     } else if (screenHeight < 900) {
         scale = 1.2; // 正常大屏，稍微放大
-        bottomPos = '50px';
+        bottomPos = '70px';
         rightPos = '30px';
     } else {
         scale = 1.5; // 超大屏，更大
-        bottomPos = '60px';
+        bottomPos = '85px';
         rightPos = '40px';
     }
     
@@ -479,10 +478,12 @@ function initChaptersWheel() {
 const navToggle = document.getElementById('nav-toggle');
 const navMenu = document.getElementById('nav-menu');
 
-navToggle.addEventListener('click', () => {
-    navMenu.classList.toggle('active');
-    navToggle.classList.toggle('active');
-});
+if (navToggle && navMenu) {
+    navToggle.addEventListener('click', () => {
+        navMenu.classList.toggle('active');
+        navToggle.classList.toggle('active');
+    });
+}
 
 // ========================================
 // PAGE TRANSITION FUNCTIONS
@@ -513,9 +514,15 @@ function switchToProjectsMode() {
         landingNav: !!landingNav
     });
     
-    // 0ms: Hide CTA button
+    // 0ms: Hide CTA button and immediately throw the ball
     homeButton.style.opacity = '0';
     homeButton.style.pointerEvents = 'none';
+    
+    // Immediately throw the ball
+    if (flyingBall) {
+        console.log('Throwing ball immediately...');
+        flyingBall.classList.add('active');
+    }
     
         // 300ms: Start slide up animation for all cards together maintaining formation
         setTimeout(() => {
@@ -703,29 +710,27 @@ function switchToProjectsMode() {
         projectsView.classList.add('active');
     }, 1800);
     
-    // 2400ms: Lying dog slides in from right (after container has slid down)
+    // 4000ms: Ball rolls off, dog immediately chases
     setTimeout(() => {
         if (lyingDog) {
-            console.log('Adding slide-in class to lying dog');
+            console.log('Dog chases after the ball...');
             
             // Apply initial transform BEFORE adding slide-in class
             adaptLyingDogSize();
             
             lyingDog.classList.add('slide-in');
             
-            // Start eye tracking for lying dog
-            startLyingDogEyeTracking();
-            
             // Apply responsive adaptation again after animation completes
+            // Dog animation is 5s running time
             setTimeout(() => {
                 adaptLyingDogSize();
-            }, 1500);
+            }, 5000);
         } else {
             console.log('Lying dog element not found!');
         }
-    }, 2400);
+    }, 4000);
     
-    // 5200ms: Show Chapters carousel (after dog slides in and eyes complete sequence)
+    // 9000ms: Dog has run off screen, now show Chapters carousel
     setTimeout(() => {
         const chaptersCarousel = document.getElementById('chaptersCarousel');
         if (chaptersCarousel) {
@@ -733,16 +738,16 @@ function switchToProjectsMode() {
             // Apply chapter cards adaptation
             adaptChapterCardsSize();
         }
-    }, 5200);
+    }, 9000);
     
-    // 5400ms: Show who's behind section (slide up from bottom)
+    // 9200ms: Show who's behind section (after cards appear)
     if (whoBehindOuterTimer) {
         clearTimeout(whoBehindOuterTimer);
     }
     whoBehindOuterTimer = setTimeout(() => {
         showWhoBehind({ delay: 0 });
         whoBehindOuterTimer = null;
-    }, 5400);
+    }, 9200);
 }
 
 // Switch back to home mode
@@ -761,6 +766,7 @@ function switchToHomeMode() {
     // Hide all projects view elements
     projectsView.classList.remove('active');
     if (lyingDog) lyingDog.classList.remove('slide-in');
+    if (flyingBall) flyingBall.classList.remove('active');
     sideOrbit.classList.remove('active');
     card3d.classList.remove('run');
     projectsGrid.classList.remove('active');
@@ -876,70 +882,15 @@ function animateProjectCards() {
 }
 
 // Start eye tracking for lying dog (global mouse tracking)
-function startLyingDogEyeTracking() {
-    if (!leftPupilLying || !rightPupilLying || !lyingDog) return;
-    
-    console.log('Starting lying dog eye tracking (global)');
-    
-    const onMoveLying = (e) => {
-        // Get lying dog position
-        const lyingDogRect = lyingDog.getBoundingClientRect();
-        const lyingDogCenterX = lyingDogRect.left + lyingDogRect.width / 2;
-        const lyingDogCenterY = lyingDogRect.top + lyingDogRect.height / 2;
-        
-        // Mouse position relative to lying dog center
-        const mouseX = e.clientX - lyingDogCenterX;
-        const mouseY = e.clientY - lyingDogCenterY;
-        
-        // Update both lying dog pupils
-        [leftPupilLying, rightPupilLying].forEach((pupil) => {
-            if (!pupil) return;
-            
-            const eyeRect = pupil.parentElement.getBoundingClientRect();
-            const eyeCenterX = eyeRect.left + eyeRect.width / 2;
-            const eyeCenterY = eyeRect.top + eyeRect.height / 2;
-            
-            // Mouse position relative to eye center
-            const dx = e.clientX - eyeCenterX;
-            const dy = e.clientY - eyeCenterY;
-            
-            // Calculate angle
-            let angle = Math.atan2(dy, dx);
-            
-            // Limit angle range: -150° to +150°
-            const minAngle = (-150 * Math.PI) / 180;
-            const maxAngle = (150 * Math.PI) / 180;
-            
-            if (angle > maxAngle) angle = maxAngle;
-            if (angle < minAngle) angle = minAngle;
-            
-            // Maximum movement radius
-            const radius = 7;
-            
-            const moveX = Math.cos(angle) * radius;
-            const moveY = Math.sin(angle) * radius;
-            
-            pupil.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px))`;
-        });
-    };
-    
-    const onLeaveLying = () => {
-        if (leftPupilLying && rightPupilLying) {
-            leftPupilLying.style.transform = 'translate(-50%, -50%)';
-            rightPupilLying.style.transform = 'translate(-50%, -50%)';
-        }
-    };
-    
-    // Add event listeners to the entire window for global tracking
-    window.addEventListener('mousemove', onMoveLying);
-    window.addEventListener('mouseleave', onLeaveLying);
-}
+// Lying dog eye tracking removed - now using GIF instead
 
 // Close mobile menu when clicking on a link
 document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', () => {
-        navMenu.classList.remove('active');
-        navToggle.classList.remove('active');
+        if (navMenu && navToggle) {
+            navMenu.classList.remove('active');
+            navToggle.classList.remove('active');
+        }
     });
 });
 
@@ -1494,8 +1445,10 @@ document.addEventListener('DOMContentLoaded', () => {
 // Add keyboard navigation support
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-        navMenu.classList.remove('active');
-        navToggle.classList.remove('active');
+        if (navMenu && navToggle) {
+            navMenu.classList.remove('active');
+            navToggle.classList.remove('active');
+        }
         
         // If in projects mode, switch back to home
         if (pageMode === 'projects') {
@@ -1996,6 +1949,16 @@ function showProjectsView() {
     try { window.scrollTo(0, 0); } catch (_) {}
     try { history.replaceState(null, '', window.location.pathname); } catch (_) {}
     
+    // Ensure landing page elements are hidden
+    const dogCardsContainer = document.getElementById('dogCardsContainer');
+    const intro = document.querySelector('.intro');
+    const buttonWrapper = document.querySelector('.button-wrapper');
+    const landingNav = document.querySelector('.landing-nav');
+    if (dogCardsContainer) dogCardsContainer.style.display = 'none';
+    if (intro) intro.style.display = 'none';
+    if (buttonWrapper) buttonWrapper.style.display = 'none';
+    if (landingNav) landingNav.style.display = 'none';
+    
     // Show projects view - directly, no animation
     if (projectsView) {
         // Temporarily disable transition for instant display
@@ -2010,23 +1973,22 @@ function showProjectsView() {
         }, 50);
     }
     
-    // Hide dog and show lying dog - directly, no animation
+    // Hide landing dog and ball
     if (dog) {
         dog.style.display = 'none';
     }
+    if (flyingBall) {
+        flyingBall.classList.remove('active');
+        flyingBall.style.opacity = '0';
+        flyingBall.style.visibility = 'hidden';
+    }
+    
+    // Hide lying dog (ball and dog animation only plays on first load)
     if (lyingDog) {
-        // Temporarily disable transition for instant display
-        lyingDog.style.transition = 'none';
-        lyingDog.style.display = 'block';
-        lyingDog.style.opacity = '1';
-        lyingDog.style.visibility = 'visible';
-        lyingDog.style.right = 'clamp(20px, 5vw, 60px)';
-        // Remove animation class to prevent animation
         lyingDog.classList.remove('slide-in');
-        // Re-enable transition after a tiny delay (for future animations)
-        setTimeout(() => {
-            lyingDog.style.transition = '';
-        }, 50);
+        lyingDog.style.display = 'none';
+        lyingDog.style.opacity = '0';
+        lyingDog.style.visibility = 'hidden';
     }
 
     // Ensure chapters carousel (if present) is active again - directly, no animation
