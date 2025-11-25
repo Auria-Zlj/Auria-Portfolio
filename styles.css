@@ -187,24 +187,34 @@ body {
 /* 尾巴样式 - 在狗狗后面 */
 .loading-screen .dog .dog-tail {
     position: absolute;
-    width: 35%;
+    width: 30%;
     height: auto;
-    right: -26%;
-    bottom: 9%;
+    right: -22%;
+    bottom: 14%;
     transform-origin: 15% 85%;  /* 旋转中心在左下角（尾巴根部） */
     z-index: 1;
     pointer-events: none;
-    animation: tailWag 1.2s ease-in-out infinite;
+    animation: tailWagSlow 2.5s ease-in-out infinite;
 }
 
 
-/* 尾巴摇摆动画 - 简单旋转，根部固定 */
-@keyframes tailWag {
+/* 尾巴慢速摇摆 - 平时悠闲状态 */
+@keyframes tailWagSlow {
     0%, 100% {
-        transform: rotate(-12deg);
+        transform: rotate(-10deg);
     }
     50% {
-        transform: rotate(15deg);
+        transform: rotate(12deg);
+    }
+}
+
+/* 尾巴快速摇摆 - hover 卡片时兴奋状态 */
+@keyframes tailWagFast {
+    0%, 100% {
+        transform: rotate(-18deg);
+    }
+    50% {
+        transform: rotate(22deg);
     }
 }
 
@@ -219,13 +229,13 @@ body {
 }
 
 .loading-screen .dog .left-eye-layer {
-    top: 17%;
+    top: 18%;
     left: 26.5%;
 }
 
 .loading-screen .dog .right-eye-layer {
-    top: 16%;
-    right: 47%;
+    top: 16.5%;
+    right: 47.5%;
 }
 
 /* 瞳孔样式（复用现有追踪逻辑） */

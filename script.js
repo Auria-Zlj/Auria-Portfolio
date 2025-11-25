@@ -1193,8 +1193,8 @@ window.addEventListener('load', () => {
             if (angle > maxAngle) angle = maxAngle;
             if (angle < minAngle) angle = minAngle;
             
-            // Maximum movement radius - adaptive based on eye size (13% of eye layer width)
-            const radius = eyeRect.width * 0.13;
+            // Maximum movement radius - adaptive based on eye size (15% of eye layer width)
+            const radius = eyeRect.width * 0.15;
             
             const moveX = Math.cos(angle) * radius;
             const moveY = Math.sin(angle) * radius;
@@ -2164,4 +2164,25 @@ function setupScrollToBottomButtons() {
 document.addEventListener('DOMContentLoaded', () => {
     setupScrollToBottomButtons();
     initChaptersWheel();
+    initTailWagOnCardHover();
 });
+
+// Tail wag animation control - fast wag when hovering cards
+function initTailWagOnCardHover() {
+    const tail = document.querySelector('.loading-screen .dog .dog-tail');
+    const cards = document.querySelectorAll('.loading-screen .radial-card');
+    
+    if (!tail || !cards.length) return;
+    
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            tail.style.animation = 'tailWagFast 0.4s ease-in-out infinite';
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            tail.style.animation = 'tailWagSlow 2.5s ease-in-out infinite';
+        });
+    });
+    
+    console.log('Tail wag animation initialized for', cards.length, 'cards');
+}
