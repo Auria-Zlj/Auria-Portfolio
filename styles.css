@@ -2400,7 +2400,7 @@ body {
     left: 0;
     top: 0;
     width: 100%;
-    height: calc(100vh - 130px); /* 只减去底部按钮区域 */
+    height: calc(100vh - 120px); /* 只减去底部按钮区域 */
     min-height: 550px;
     display: flex;
     justify-content: center;
@@ -2458,7 +2458,7 @@ body {
 @media (max-width: 1024px) {
     .chapters {
         top: 0;
-        height: calc(100vh - 120px);
+        height: calc(100vh - 110px);
         min-height: 500px;
     }
 }
@@ -2466,7 +2466,7 @@ body {
 @media (max-width: 768px) {
     .chapters {
         top: 0;
-        height: calc(100vh - 110px);
+        height: calc(100vh - 100px);
         min-height: 450px;
     }
     
@@ -2478,7 +2478,7 @@ body {
 @media (max-width: 480px) {
     .chapters {
         top: 0;
-        height: calc(100vh - 100px);
+        height: calc(100vh - 90px);
         min-height: 400px;
     }
     
@@ -2491,7 +2491,7 @@ body {
 @media (max-width: 360px) {
     .chapters {
         top: 0;
-        height: calc(100vh - 90px);
+        height: calc(100vh - 80px);
         min-height: 350px;
     }
     
@@ -3331,7 +3331,7 @@ body {
 /* Who's Behind Section - Button Style */
 .who-behind {
     position: fixed;
-    bottom: clamp(120px, 20vh, 180px); /* 默认偏移，JS会根据屏幕调整 */
+    bottom: clamp(30px, 6vh, 60px); /* 靠近底部，视口内可见即可 */
     left: 50%;
     transform: translateX(-50%) translateY(100vh);
     text-align: center;
@@ -3456,6 +3456,21 @@ body {
 
 .who-behind .hand-drawn-button:hover .highlight {
     stroke-dashoffset: 0;
+}
+
+/* Responsive styles for who-behind button - match loading-screen button */
+@media (max-width: 480px) {
+    .who-behind .hand-drawn-button {
+        font-size: clamp(1.3rem, 3.5vw, 1.8rem);
+        padding: clamp(0.9em, 2.5vw, 1.1em) clamp(1.4em, 3.5vw, 1.7em);
+    }
+}
+
+@media (max-width: 360px) {
+    .who-behind .hand-drawn-button {
+        font-size: clamp(1.2rem, 3.5vw, 1.6rem);
+        padding: clamp(0.8em, 2.3vw, 1em) clamp(1.2em, 3.3vw, 1.5em);
+    }
 }
 
 /* About Me View */
