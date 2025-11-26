@@ -627,17 +627,20 @@ function initChaptersWheel() {
     const handleWheel = (e) => {
         if (pageMode !== 'projects') return;
         if (!chapters.classList.contains('active')) return;
-        if (isScrolling) return;
-
-        // If horizontal intent is stronger, let default behavior happen
-        if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-
-        e.preventDefault();
         
-        const deltaY = e.deltaY;
+        // 始终阻止默认滚动行为，禁止任何上下滚动
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (isScrolling) return;
+        
+        // 将垂直和水平滚动都转换为卡片切换
+        // deltaY: 上下滚动, deltaX: 左右滚动
+        // 优先使用垂直滚动值，如果没有则使用水平滚动值
+        const delta = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
         
         // 累积滚轮值，只有达到阈值才切换
-        wheelAccumulator += deltaY;
+        wheelAccumulator += delta;
         
         if (Math.abs(wheelAccumulator) >= wheelThreshold) {
             // Throttle scroll events
@@ -645,12 +648,12 @@ function initChaptersWheel() {
             setTimeout(() => { isScrolling = false; }, 800);
             
             if (wheelAccumulator > 0) {
-                // Scroll down = next card
+                // Scroll down/right = next card
                 if (currentCardIndex < cards.length - 1) {
                     scrollToCard(currentCardIndex + 1);
                 }
             } else {
-                // Scroll up = previous card
+                // Scroll up/left = previous card
                 if (currentCardIndex > 0) {
                     scrollToCard(currentCardIndex - 1);
                 }

@@ -2398,9 +2398,10 @@ body {
 .chapters {
     position: absolute;
     left: 0;
-    top: 10%;  /* 进一步减少顶部空白 */
+    top: 0;
     width: 100%;
-    height: 80vh; /* 使用视口高度，确保有足够空间 */
+    height: calc(100vh - 130px); /* 只减去底部按钮区域 */
+    min-height: 550px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -2410,6 +2411,9 @@ body {
     z-index: 10;
     overflow: visible;
     transform-style: preserve-3d; /* 保持3D变换空间 */
+    /* 禁止垂直滚动，只允许水平操作 */
+    touch-action: pan-x;
+    overscroll-behavior: contain;
 }
 
 .chapters-viewport {
@@ -2425,7 +2429,7 @@ body {
     width: 100%;
     height: 100%;
     overflow-x: auto;
-    overflow-y: hidden;
+    overflow-y: hidden; /* 完全禁止垂直滚动 */
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
@@ -2433,6 +2437,11 @@ body {
     transform-style: preserve-3d; /* Keep 3D transforms intact */
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
+    padding: 20px 0; /* 减少内边距，给卡片更多空间 */
+    box-sizing: border-box;
+    /* 禁止触摸设备的垂直滚动 */
+    touch-action: pan-x;
+    overscroll-behavior: contain;
 }
 
 .chapters-scroll::-webkit-scrollbar {
@@ -2448,15 +2457,17 @@ body {
 
 @media (max-width: 1024px) {
     .chapters {
-        top: 25%;  /* 平衡位置 */
-        height: 500px;
+        top: 0;
+        height: calc(100vh - 120px);
+        min-height: 500px;
     }
 }
 
 @media (max-width: 768px) {
     .chapters {
-        top: 28%;  /* 平衡位置 */
-        height: 420px;
+        top: 0;
+        height: calc(100vh - 110px);
+        min-height: 450px;
     }
     
     .chapters-track {
@@ -2466,8 +2477,9 @@ body {
 
 @media (max-width: 480px) {
     .chapters {
-        top: 32%;  /* 平衡位置 */
-        height: 380px;
+        top: 0;
+        height: calc(100vh - 100px);
+        min-height: 400px;
     }
     
     .chapters-track {
@@ -2478,8 +2490,9 @@ body {
 
 @media (max-width: 360px) {
     .chapters {
-        top: 35%;  /* 平衡位置，避免重叠 */
-        height: 320px;
+        top: 0;
+        height: calc(100vh - 90px);
+        min-height: 350px;
     }
     
     .chapters-track {
@@ -2571,8 +2584,8 @@ body {
     opacity: 1 !important;
     animation: none !important;
     will-change: transform, opacity, filter;
-    /* Subtle brightness boost with smooth transition */
-    filter: brightness(1.12) drop-shadow(0 8px 24px rgba(0, 0, 0, 0.15));
+    /* Subtle brightness boost, no shadow */
+    filter: brightness(1.08);
 }
 
 
@@ -2852,7 +2865,7 @@ body {
 .chapters .card.is-active {
     opacity: 1;
     transform: scale(1);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    box-shadow: none; /* 移除阴影 */
 }
 
 .chapters .card-link {
@@ -2865,7 +2878,7 @@ body {
     border-radius: 20px;
     overflow: hidden;
     background: transparent;
-    box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.5);
+    box-shadow: none; /* 移除阴影 */
     transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     pointer-events: auto;
     position: relative;
@@ -2873,7 +2886,7 @@ body {
 
 .chapters .chapter-card:hover .card-link {
     transform: scale(1.05);
-    box-shadow: 0 8px 16px rgba(255, 255, 255, 0.2);
+    box-shadow: none; /* 移除hover阴影 */
 }
 
 .chapters .card-content-overlay {
