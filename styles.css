@@ -2069,6 +2069,8 @@ body {
     pointer-events: none;
     transform: translateY(-100vh); /* Start from top */
     transition: opacity 0.6s ease, transform 0.6s ease;
+    overflow: visible; /* 确保3D效果不被裁剪 */
+    transform-style: preserve-3d; /* 保持3D变换空间 */
     z-index: 2000;
     overflow-y: auto; /* Allow scrolling within the projects view */
 }
@@ -2078,8 +2080,8 @@ body {
     position: fixed;
     right: -100px;
     bottom: 120px;
-    width: 60px;
-    height: 60px;
+    width: clamp(40px, 4vw, 80px);  /* 响应式尺寸 */
+    height: clamp(40px, 4vw, 80px); /* 响应式尺寸 */
     opacity: 0;
     visibility: hidden;
     z-index: 6; /* Above dog */
@@ -2143,6 +2145,39 @@ body {
     100% { 
         right: 110%;
         transform: translateY(0) rotate(-2880deg);
+    }
+}
+
+/* Flying Ball Responsive Adjustments */
+@media (max-width: 1024px) {
+    .flying-ball {
+        bottom: 100px;
+        width: clamp(35px, 3.5vw, 70px);
+        height: clamp(35px, 3.5vw, 70px);
+    }
+}
+
+@media (max-width: 768px) {
+    .flying-ball {
+        bottom: 80px;
+        width: clamp(30px, 3vw, 60px);
+        height: clamp(30px, 3vw, 60px);
+    }
+}
+
+@media (max-width: 480px) {
+    .flying-ball {
+        bottom: 60px;
+        width: clamp(25px, 2.5vw, 50px);
+        height: clamp(25px, 2.5vw, 50px);
+    }
+}
+
+@media (max-width: 360px) {
+    .flying-ball {
+        bottom: 50px;
+        width: clamp(20px, 2vw, 40px);
+        height: clamp(20px, 2vw, 40px);
     }
 }
 
@@ -2363,9 +2398,9 @@ body {
 .chapters {
     position: absolute;
     left: 0;
-    top: 15%;
+    top: 10%;  /* 进一步减少顶部空白 */
     width: 100%;
-    height: 700px;
+    height: 80vh; /* 使用视口高度，确保有足够空间 */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -2374,6 +2409,7 @@ body {
     transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     z-index: 10;
     overflow: visible;
+    transform-style: preserve-3d; /* 保持3D变换空间 */
 }
 
 .chapters-viewport {
@@ -2381,11 +2417,12 @@ body {
     width: 100%;
     height: 100%;
     overflow-x: auto;
-    overflow-y: visible;
+    overflow-y: visible; /* 确保垂直方向不裁剪 */
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
     cursor: grab;
+    transform-style: preserve-3d; /* 保持3D变换空间 */
     /* Hide scrollbar */
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
@@ -2402,9 +2439,16 @@ body {
     }
 }
 
+@media (max-width: 1024px) {
+    .chapters {
+        top: 25%;  /* 平衡位置 */
+        height: 500px;
+    }
+}
+
 @media (max-width: 768px) {
     .chapters {
-        top: 15%;
+        top: 28%;  /* 平衡位置 */
         height: 420px;
     }
     
@@ -2415,7 +2459,7 @@ body {
 
 @media (max-width: 480px) {
     .chapters {
-        top: 12%;
+        top: 32%;  /* 平衡位置 */
         height: 380px;
     }
     
@@ -2427,7 +2471,7 @@ body {
 
 @media (max-width: 360px) {
     .chapters {
-        top: 10%;
+        top: 35%;  /* 平衡位置，避免重叠 */
         height: 320px;
     }
     
@@ -2456,18 +2500,21 @@ body {
 .chapters-track {
     display: flex;
     gap: 180px;
-    padding: 0 calc(50vw - 240px);
+    padding: 0 calc(50vw - 240px); /* 移除上下padding，避免位置变化 */
     list-style: none;
-    height: 80%;
+    height: 100%;
     align-items: center;
+    transform-style: preserve-3d; /* 保持3D变换空间 */
+    box-sizing: border-box;
     min-width: max-content; /* Ensure track is wider than viewport */
+    position: relative; /* 确保定位稳定 */
 }
 
 /* Chapter card container */
 .chapter-card {
     flex: 0 0 auto;
-    width: 480px;
-    height: 320px;
+    width: 600px;  /* 从 480px 增加到 600px */
+    height: 400px; /* 从 320px 增加到 400px */
     scroll-snap-align: center;
     scroll-snap-stop: always;
     position: relative;
@@ -2479,15 +2526,24 @@ body {
     will-change: transform, opacity;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
+    transform-style: preserve-3d; /* 保持3D变换空间 */
+    overflow: visible; /* 确保3D效果不被裁剪 */
+    /* 固定垂直位置，防止任何移动 */
+    top: 0 !important;
+    margin: 0 !important;
+    vertical-align: top !important;
 }
 
-/* Non-centered and non-hovered cards - small with float animation */
+/* Non-centered and non-hovered cards - small with NO float animation */
 .chapter-card:not(.is-centered):not(:hover) {
-    animation: float var(--float-duration, 3s) ease-in-out infinite !important;
+    animation: none !important; /* 禁用浮动动画，防止上下移动 */
     animation-delay: var(--float-delay, 0s);
     transform: scale(0.65) !important;
     opacity: 1 !important;
     z-index: 1;
+    /* 强制固定位置 */
+    top: 0 !important;
+    position: relative !important;
 }
 
 /* Float animation - different rhythm for each card */
@@ -2531,6 +2587,10 @@ body {
     transition: none !important;
     animation-name: none !important;
     will-change: transform, opacity;
+    /* 强制固定位置，防止hover时移动 */
+    top: 0 !important;
+    margin: 0 !important;
+    position: relative !important;
 }
 
 
@@ -2549,6 +2609,9 @@ body {
     /* Smooth inertial transition for hover tilt */
     transition: transform 0.12s cubic-bezier(0.23, 1, 0.32, 1);
     will-change: transform;
+    /* 强制固定位置，防止3D变换导致移动 */
+    top: 0 !important;
+    left: 0 !important;
 }
 
 /* On hover: flatten 3D angles and apply mouse tilt */
@@ -2560,6 +2623,10 @@ body {
                rotateZ(0deg)
                translateZ(0px)
                scale(1) !important;
+    /* 强制固定位置，防止hover时移动 */
+    top: 0 !important;
+    left: 0 !important;
+    position: relative !important;
 }
 
 /* Active state with explicit tilt angles */
@@ -2659,24 +2726,20 @@ body {
 /* Responsive card size - gradually scale down */
 @media (max-width: 1024px) {
     .chapter-card {
-        width: 420px;
-        height: 280px;
+        width: 520px;  /* 从 420px 增加到 520px */
+        height: 350px; /* 从 280px 增加到 350px */
     }
     
-    .chapters .card-cover {
-        height: 180px;
-    }
+    /* .card-cover height now uses 100% !important from base style */
 }
 
 @media (max-width: 768px) {
     .chapter-card {
-        width: 360px;
-        height: 240px;
+        width: 450px;  /* 从 360px 增加到 450px */
+        height: 300px; /* 从 240px 增加到 300px */
     }
     
-    .chapters .card-cover {
-        height: 160px;
-    }
+    /* .card-cover height now uses 100% !important from base style */
     
     .chapters .card-title {
         font-size: 1.1rem;
@@ -2695,8 +2758,8 @@ body {
 
 @media (max-width: 480px) {
     .chapter-card {
-        width: 300px;
-        height: 200px;
+        width: 380px;  /* 从 300px 增加到 380px */
+        height: 250px; /* 从 200px 增加到 250px */
     }
     
     .chapters .card-title {
@@ -2714,9 +2777,7 @@ body {
         padding: 0 16px 16px;
     }
     
-    .chapters .card-cover {
-        height: 120px;
-    }
+    /* .card-cover height now uses 100% !important from base style */
 }
 
 @media (max-width: 480px) {
@@ -2725,9 +2786,7 @@ body {
         height: 80px;
     }
     
-    .chapters .card-cover {
-        height: 50px;
-    }
+    /* .card-cover height now uses 100% !important from base style */
     
     .chapters .card-title {
         font-size: 0.7rem;
@@ -2746,9 +2805,7 @@ body {
         height: 67px;
     }
     
-    .chapters .card-cover {
-        height: 40px;
-    }
+    /* .card-cover height now uses 100% !important from base style */
     
     .chapters .card-title {
         font-size: 0.6rem;
@@ -2767,9 +2824,7 @@ body {
         height: 60px;
     }
     
-    .chapters .card-cover {
-        height: 35px;
-    }
+    /* .card-cover height now uses 100% !important from base style */
     
     .chapters .card-title {
         font-size: 0.55rem;
@@ -2837,25 +2892,33 @@ body {
 
 .chapters .card-content-overlay {
     position: absolute;
-    bottom: -100%;
+    bottom: 0;
     left: 0;
     right: 0;
     background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(10px);
     padding: 10px 15px 15px 15px;
     z-index: 4;
-    transition: bottom 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     border-radius: 0 0 20px 20px;
     height: 100px;
+    transform: translateY(100%); /* 使用transform避免影响卡片位置 */
+    pointer-events: none;
+    /* 确保overlay不影响父元素位置 */
+    will-change: transform;
+    contain: layout style paint;
 }
 
 .chapters .chapter-card:hover .card-content-overlay {
-    bottom: 0;
+    transform: translateY(0); /* 滑入显示，不影响卡片位置 */
+    pointer-events: auto;
+    /* 确保hover时也不影响布局 */
+    position: absolute !important;
 }
 
 .chapters .card-cover {
     width: 100%;
-    height: 100%;
+    height: 100% !important;  /* 强制覆盖所有媒体查询 */
     object-fit: cover;
     display: block;
     position: absolute;
@@ -2947,13 +3010,13 @@ body {
 /* Responsive styles for project cards */
 @media (max-width: 1024px) {
     .chapter-card {
-        width: 400px;
-        height: 260px;
+        width: 500px;  /* 从 400px 增加到 500px */
+        height: 330px; /* 从 260px 增加到 330px */
     }
     
     .chapters .card-content-overlay {
-        height: 100px;
-        padding: 10px 15px 15px 15px;
+        height: 125px;  /* 从 100px 增加到 125px */
+        padding: 12px 18px 18px 18px;  /* 增加 padding */
     }
     
     .chapters .card-title {
@@ -2987,13 +3050,13 @@ body {
 
 @media (max-width: 768px) {
     .chapter-card {
-        width: 320px;
-        height: 210px;
+        width: 400px;  /* 从 320px 增加到 400px */
+        height: 270px; /* 从 210px 增加到 270px */
     }
     
     .chapters .card-content-overlay {
-        height: 85px;
-        padding: 8px 12px 12px 12px;
+        height: 105px;  /* 从 85px 增加到 105px */
+        padding: 10px 15px 15px 15px;  /* 增加 padding */
     }
     
     .chapters .card-title {
@@ -3027,13 +3090,13 @@ body {
 
 @media (max-width: 480px) {
     .chapter-card {
-        width: 280px;
-        height: 185px;
+        width: 350px;  /* 从 280px 增加到 350px */
+        height: 235px; /* 从 185px 增加到 235px */
     }
     
     .chapters .card-content-overlay {
-        height: 75px;
-        padding: 6px 10px 10px 10px;
+        height: 95px;  /* 从 75px 增加到 95px */
+        padding: 8px 12px 12px 12px;  /* 增加 padding */
     }
     
     .chapters .card-title {
@@ -3067,13 +3130,13 @@ body {
 
 @media (max-width: 360px) {
     .chapter-card {
-        width: 240px;
-        height: 160px;
+        width: 300px;  /* 从 240px 增加到 300px */
+        height: 200px; /* 从 160px 增加到 200px */
     }
     
     .chapters .card-content-overlay {
-        height: 65px;
-        padding: 5px 8px 8px 8px;
+        height: 80px;  /* 从 65px 增加到 80px */
+        padding: 6px 10px 10px 10px;  /* 增加 padding */
     }
     
     .chapters .card-title {

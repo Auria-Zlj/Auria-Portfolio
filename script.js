@@ -171,31 +171,31 @@ function adaptLyingDogSize() {
     // 始终保持在右下角，稍低一点
     if (screenWidth < 360) {
         scale = 0.3; // 超小屏
-        bottomPos = '30px';
+        bottomPos = '10px'; // 降低位置
         rightPos = '8px';
     } else if (screenWidth < 480) {
         scale = 0.4; // 小屏
-        bottomPos = '35px';
+        bottomPos = '15px'; // 降低位置
         rightPos = '10px';
     } else if (screenWidth < 768) {
         scale = screenHeight < 700 ? 0.55 : 0.6; // 中屏，高度矮时更小
-        bottomPos = screenHeight < 700 ? '40px' : '50px';
+        bottomPos = screenHeight < 700 ? '20px' : '25px'; // 降低位置
         rightPos = screenHeight < 700 ? '12px' : '18px';
     } else if (screenHeight < 600) {
         scale = 0.65; // 高度矮的时候缩小
-        bottomPos = '45px';
+        bottomPos = '25px'; // 降低位置
         rightPos = '20px';
     } else if (screenHeight < 700) {
         scale = 0.75; // 稍微矮的时候
-        bottomPos = '55px';
+        bottomPos = '35px'; // 降低位置
         rightPos = '25px';
     } else if (screenHeight < 900) {
         scale = 1.2; // 正常大屏，稍微放大
-        bottomPos = '70px';
+        bottomPos = '50px'; // 降低位置
         rightPos = '30px';
     } else {
         scale = 1.5; // 超大屏，更大
-        bottomPos = '85px';
+        bottomPos = '65px'; // 降低位置
         rightPos = '40px';
     }
     
@@ -368,38 +368,56 @@ function adaptChapterCardsSize() {
     const chapterCards = document.querySelectorAll('.chapter-card');
     const chapters = document.querySelector('.chapters');
     
+    // 智能计算卡片尺寸，同时考虑宽度和高度限制
+    let cardWidth, cardHeight;
+    
+    // 首先根据屏幕宽度计算基础尺寸
+    let baseWidth, baseHeight;
+    if (screenWidth < 360) {
+        baseWidth = Math.min(screenWidth * 0.6, 180);
+    } else if (screenWidth < 480) {
+        baseWidth = Math.min(screenWidth * 0.65, 240);
+    } else if (screenWidth < 768) {
+        baseWidth = Math.min(screenWidth * 0.45, 320);
+    } else if (screenWidth < 1024) {
+        baseWidth = Math.min(screenWidth * 0.4, 380);
+    } else if (screenWidth < 1440) {
+        baseWidth = Math.min(screenWidth * 0.42, 480);
+    } else {
+        // 巨屏：使用CSS默认值
+        cardWidth = null;
+        cardHeight = null;
+    }
+    
+    if (baseWidth) {
+        baseHeight = baseWidth * 0.67;
+        
+        // 根据屏幕高度限制卡片最大高度
+        const { bottomPosition } = computeWhoBehindResponsiveSettings(screenWidth, screenHeight);
+        const buttonSpace = bottomPosition + 100; // 按钮 + 间距
+        const topSpace = screenHeight * 0.1; // 顶部间距
+        const maxAvailableHeight = screenHeight - topSpace - buttonSpace;
+        const maxCardHeight = maxAvailableHeight * 0.6; // 卡片最多占可用高度的60%
+        
+        // 如果计算的卡片高度超过可用高度，按比例缩小
+        if (baseHeight > maxCardHeight) {
+            const scaleFactor = maxCardHeight / baseHeight;
+            cardWidth = baseWidth * scaleFactor;
+            cardHeight = baseHeight * scaleFactor;
+            console.log(`Card scaled down by ${(scaleFactor * 100).toFixed(1)}% due to height constraint`);
+        } else {
+            cardWidth = baseWidth;
+            cardHeight = baseHeight;
+        }
+    }
+    
     chapterCards.forEach(card => {
-        if (screenWidth < 320) {
-            card.style.width = '90px';
-            card.style.height = '60px';
-        } else if (screenWidth < 360) {
-            card.style.width = '100px';
-            card.style.height = '67px';
-        } else if (screenWidth < 480) {
-            card.style.width = '120px';
-            card.style.height = '80px';
-        } else if (screenWidth < 768) {
-            card.style.width = '240px';
-            card.style.height = '160px';
+        if (cardWidth && cardHeight) {
+            card.style.width = cardWidth + 'px';
+            card.style.height = cardHeight + 'px';
         } else {
             card.style.width = '';
             card.style.height = '';
-        }
-        
-        // Adjust cover height
-        const cover = card.querySelector('.card-cover');
-        if (cover) {
-            if (screenWidth < 320) {
-                cover.style.height = '35px';
-            } else if (screenWidth < 360) {
-                cover.style.height = '40px';
-            } else if (screenWidth < 480) {
-                cover.style.height = '50px';
-            } else if (screenWidth < 768) {
-                cover.style.height = '100px';
-            } else {
-                cover.style.height = '';
-            }
         }
     });
     
@@ -424,22 +442,68 @@ function adaptChapterCardsSize() {
         }
     }
     
-    // Adjust chapters container based on height to prevent overlap
+    // 智能计算容器位置，确保上下都有足够间距
     if (chapters) {
-        if (screenHeight < 600) {
-            // Very short screen - reduce container height and move up
-            chapters.style.top = '10%';
-            chapters.style.height = '200px';
+        let containerTop, containerHeight;
+        
+        // 计算安全的顶部位置和高度，考虑底部按钮占用的空间
+        const topMargin = screenHeight * 0.08;   // 8%顶部间距
+        
+        // 获取按钮实际占用的空间
+        const { bottomPosition } = computeWhoBehindResponsiveSettings(screenWidth, screenHeight);
+        const buttonHeight = 80; // 按钮大概高度
+        const buttonTotalSpace = bottomPosition + buttonHeight + 20; // 按钮位置 + 高度 + 额外间距
+        
+        const availableHeight = screenHeight - topMargin - buttonTotalSpace;
+        
+        // 根据实际卡片高度动态计算容器高度
+        const estimatedCardHeight = cardHeight || 200; // 使用实际卡片高度或默认值
+        const minContainerHeight = estimatedCardHeight + 300; // 卡片高度 + 更多间距，确保hover和滚动按钮有空间
+        
+        // 计算居中位置，稍微往上调整
+        const centerPosition = (screenHeight - buttonTotalSpace) / 2;
+        const topPercentage = (centerPosition / screenHeight * 100);
+        
+        // 更激进的往上布局，减少顶部空白
+        const containerHeightNeeded = minContainerHeight;
+        
+        // 确保容器高度足够显示完整卡片
+        const safeContainerHeight = Math.max(minContainerHeight, estimatedCardHeight + 240); // 卡片高度 + 更多间距给hover效果
+        
+        if (screenHeight < 500) {
+            // 极短屏：尽量靠上，但确保容器够高
+            containerTop = '5%';
+            containerHeight = Math.max(safeContainerHeight, availableHeight * 0.85);
+        } else if (screenHeight < 600) {
+            // 超短屏：靠上布局，确保显示完整
+            containerTop = '8%';
+            containerHeight = Math.max(safeContainerHeight, availableHeight * 0.8);
         } else if (screenHeight < 700) {
-            // Short screen
-            chapters.style.top = '12%';
-            chapters.style.height = '280px';
-        } else if (screenWidth < 480) {
-            chapters.style.top = '12%';
-            chapters.style.height = '380px';
-        } else if (screenWidth < 768) {
-            chapters.style.top = '15%';
-            chapters.style.height = '420px';
+            // 短屏：往上布局，充足高度
+            containerTop = '10%';
+            containerHeight = Math.max(safeContainerHeight, 400);
+        } else if (screenHeight < 800) {
+            // 中等高度：适中往上，充足高度
+            containerTop = '12%';
+            containerHeight = Math.max(safeContainerHeight, 450);
+        } else if (screenHeight < 900) {
+            // 较高屏：稍微往上，充足高度
+            containerTop = '15%';
+            containerHeight = Math.max(safeContainerHeight, 500);
+        } else if (screenHeight < 1000) {
+            // 高屏：适中位置，充足高度
+            containerTop = '18%';
+            containerHeight = Math.max(safeContainerHeight, 550);
+        } else {
+            // 超高屏：使用CSS默认值
+            containerTop = null;
+            containerHeight = null;
+        }
+        
+        if (containerTop && containerHeight) {
+            chapters.style.top = containerTop;
+            chapters.style.height = containerHeight + 'px';
+            console.log(`Container positioned: top=${containerTop}, height=${containerHeight}px, available=${availableHeight}px`);
         } else {
             chapters.style.top = '';
             chapters.style.height = '';
@@ -535,30 +599,100 @@ function initChaptersWheel() {
     const chapters = document.querySelector('.chapters');
     if (!viewport || !chapters) return;
 
+    let currentCardIndex = 0;
+    const cards = document.querySelectorAll('.chapter-card');
+    let isScrolling = false;
+
+    const scrollToCard = (index) => {
+        if (index < 0 || index >= cards.length) return;
+        
+        const targetCard = cards[index];
+        const targetLeft = targetCard.offsetLeft + targetCard.offsetWidth / 2 - viewport.offsetWidth / 2;
+        
+        viewport.scrollTo({
+            left: targetLeft,
+            behavior: 'smooth'
+        });
+        
+        currentCardIndex = index;
+        updateCenteredCard();
+    };
+
+    let wheelAccumulator = 0;
+    const wheelThreshold = 100; // 需要累积到这个值才切换卡片
+
     const handleWheel = (e) => {
         if (pageMode !== 'projects') return;
         if (!chapters.classList.contains('active')) return;
+        if (isScrolling) return;
 
         // If horizontal intent is stronger, let default behavior happen
         if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
 
         e.preventDefault();
+        
         const deltaY = e.deltaY;
-        const step = deltaY * 0.85;
-        let target = viewport.scrollLeft + step;
-        const maxScroll = viewport.scrollWidth - viewport.clientWidth;
-        target = Math.max(0, Math.min(target, maxScroll));
-        viewport.scrollTo({
-            left: target,
-            behavior: 'smooth'
+        
+        // 累积滚轮值，只有达到阈值才切换
+        wheelAccumulator += deltaY;
+        
+        if (Math.abs(wheelAccumulator) >= wheelThreshold) {
+            // Throttle scroll events
+            isScrolling = true;
+            setTimeout(() => { isScrolling = false; }, 800);
+            
+            if (wheelAccumulator > 0) {
+                // Scroll down = next card
+                if (currentCardIndex < cards.length - 1) {
+                    scrollToCard(currentCardIndex + 1);
+                }
+            } else {
+                // Scroll up = previous card
+                if (currentCardIndex > 0) {
+                    scrollToCard(currentCardIndex - 1);
+                }
+            }
+            
+            // 重置累积器
+            wheelAccumulator = 0;
+        }
+        
+        // 如果长时间没有滚轮事件，重置累积器
+        clearTimeout(handleWheel.resetTimer);
+        handleWheel.resetTimer = setTimeout(() => {
+            wheelAccumulator = 0;
+        }, 200);
+    };
+
+    // Initialize current card index based on scroll position
+    const updateCurrentIndex = () => {
+        const viewportCenter = viewport.scrollLeft + viewport.clientWidth / 2;
+        let closestIndex = 0;
+        let closestDistance = Infinity;
+        
+        cards.forEach((card, index) => {
+            const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+            const distance = Math.abs(cardCenter - viewportCenter);
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closestIndex = index;
+            }
         });
+        
+        currentCardIndex = closestIndex;
     };
 
     viewport.addEventListener('wheel', handleWheel, { passive: false });
     chapters.addEventListener('wheel', handleWheel, { passive: false });
+    
+    // Update current index on manual scroll
+    viewport.addEventListener('scroll', updateCurrentIndex, { passive: true });
+
+    // Initialize
+    updateCurrentIndex();
 
     chaptersWheelInitialized = true;
-    console.log('Chapters wheel scroll initialized');
+    console.log('Chapters wheel scroll initialized with card-by-card navigation');
 }
 
 // Mobile Navigation Toggle
@@ -1900,9 +2034,8 @@ setTimeout(() => {
     const viewport = document.querySelector('.chapters-viewport');
     if (viewport) {
         let isUpdating = false;
-        let snapTimeout = null;
         
-        // Update on scroll
+        // Update on scroll for visual effects only (no auto-snap)
         viewport.addEventListener('scroll', () => {
             if (!isUpdating) {
                 isUpdating = true;
@@ -1911,32 +2044,6 @@ setTimeout(() => {
                     isUpdating = false;
                 });
             }
-            
-            // Snap to nearest card after scroll ends
-            clearTimeout(snapTimeout);
-            snapTimeout = setTimeout(() => {
-                const cards = document.querySelectorAll('.chapter-card');
-                if (!viewport || cards.length === 0) return;
-                
-                let closestCard = null;
-                let closestDistance = Infinity;
-                const viewportCenter = viewport.scrollLeft + viewport.clientWidth / 2;
-                
-                cards.forEach(card => {
-                    const cardCenter = card.offsetLeft + card.offsetWidth / 2;
-                    const distance = Math.abs(cardCenter - viewportCenter);
-                    if (distance < closestDistance) {
-                        closestDistance = distance;
-                        closestCard = card;
-                    }
-                });
-                
-                // Snap to center if far enough
-                if (closestCard && closestDistance > 30) {
-                    const targetLeft = closestCard.offsetLeft + closestCard.offsetWidth / 2 - viewport.offsetWidth / 2;
-                    viewport.scrollTo({ left: targetLeft, behavior: 'smooth' });
-                }
-            }, 150);
         }, { passive: true });
         
         updateCenteredCard(); // Initial check
