@@ -12,6 +12,8 @@ const projectView = document.getElementById('project1');
 const dog = document.getElementById('dog');
 const lyingDog = document.getElementById('lyingDog');
 const flyingBall = document.getElementById('flyingBall');
+const dogBallContainer = document.getElementById('dogBallContainer');
+const dogBallTail = document.getElementById('dogBallTail');
 const sideOrbit = document.getElementById('sideOrbit');
 const card3d = document.getElementById('card3d');
 const projectsGrid = document.getElementById('projectsGrid');
@@ -209,6 +211,90 @@ function adaptLyingDogSize() {
     lyingDog.style.right = rightPos;
     
     console.log(`Lying dog adapted: scale ${scale}, --dog-scale=${scale}, position bottom:${bottomPos} right:${rightPos}, screen ${screenWidth}x${screenHeight}`);
+}
+
+// Responsive adaptation for dog ball container and tail
+function adaptDogBallSize() {
+    if (!dogBallContainer) return;
+    
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    
+    let containerWidth, containerHeight, tailWidth, tailRight, tailBottom, leftPos, bottomPos;
+    
+    // Responsive sizing based on screen width - avoid button overlap
+    if (screenWidth < 360) {
+        containerWidth = '80px';  // Increased from 60px
+        containerHeight = '80px';
+        tailWidth = '24px'; // 30% of container
+        tailRight = '-22px';
+        tailBottom = '2px';
+        leftPos = '30px';  // Moved right from 10px
+        bottomPos = '60px'; // Significantly higher
+    } else if (screenWidth < 480) {
+        containerWidth = '95px';  // Increased from 70px
+        containerHeight = '95px';
+        tailWidth = '28px';
+        tailRight = '-25px';
+        tailBottom = '3px';
+        leftPos = '40px';  // Moved right from 15px
+        bottomPos = '70px'; // Significantly higher
+    } else if (screenWidth < 768) {
+        containerWidth = '120px';  // Increased from 90px
+        containerHeight = '120px';
+        tailWidth = '36px';
+        tailRight = '-30px';
+        tailBottom = '4px';
+        leftPos = '50px';  // Moved right from 25px
+        bottomPos = '80px'; // Significantly higher
+    } else if (screenWidth < 1024) {
+        containerWidth = '140px';  // Increased from 110px
+        containerHeight = '140px';
+        tailWidth = '42px';
+        tailRight = '-35px';
+        tailBottom = '4px';
+        leftPos = '60px';  // Moved right from 35px
+        bottomPos = '90px'; // Significantly higher
+    } else if (screenWidth < 1440) {
+        containerWidth = '170px';  // Increased from 130px
+        containerHeight = '170px';
+        tailWidth = '51px';
+        tailRight = '-42px';
+        tailBottom = '4px';
+        leftPos = '70px';  // Moved right from 45px
+        bottomPos = '100px'; // Significantly higher
+    } else {
+        containerWidth = '200px';  // Increased from 150px
+        containerHeight = '200px';
+        tailWidth = '60px';
+        tailRight = '-48px';
+        tailBottom = '5px';
+        leftPos = '80px';  // Moved right from 50px
+        bottomPos = '110px'; // Significantly higher
+    }
+    
+    // Apply responsive styles to container - including position
+    dogBallContainer.style.width = containerWidth;
+    dogBallContainer.style.height = containerHeight;
+    dogBallContainer.style.left = leftPos;
+    dogBallContainer.style.setProperty('bottom', bottomPos, 'important');
+    
+    // Apply responsive styles to main dog image
+    const dogBallImg = dogBallContainer.querySelector('.dog-ball');
+    if (dogBallImg) {
+        dogBallImg.style.width = containerWidth;
+    }
+    
+    // Apply responsive styles to tail
+    if (dogBallTail) {
+        dogBallTail.style.width = tailWidth;
+        dogBallTail.style.right = tailRight;
+        dogBallTail.style.bottom = tailBottom;
+    }
+    
+    console.log(`Dog ball adapted: container=${containerWidth}, tail=${tailWidth}, position left=${leftPos} bottom=${bottomPos}`);
+    console.log('DogBall actual bottom style:', dogBallContainer.style.bottom);
+    console.log('DogBall computed style:', window.getComputedStyle(dogBallContainer).bottom);
 }
 
 // Responsive adaptation for 3D cards
@@ -423,6 +509,7 @@ function adaptAllElements() {
     adaptCardsSize();
     adaptChapterCardsSize(); // Add chapter cards adaptation
     adaptButtonSize();
+    adaptDogBallSize(); // Add dog ball adaptation
 }
 
 // Window resize listener
@@ -710,7 +797,7 @@ function switchToProjectsMode() {
         projectsView.classList.add('active');
     }, 1800);
     
-    // 4000ms: Ball rolls off, dog immediately chases
+    // 2200ms: Dog chases very early while ball is still flying/bouncing
     setTimeout(() => {
         if (lyingDog) {
             console.log('Dog chases after the ball...');
@@ -721,16 +808,16 @@ function switchToProjectsMode() {
             lyingDog.classList.add('slide-in');
             
             // Apply responsive adaptation again after animation completes
-            // Dog animation is 5s running time
+            // Dog animation is 4s running time
             setTimeout(() => {
                 adaptLyingDogSize();
-            }, 5000);
+            }, 4000);
         } else {
             console.log('Lying dog element not found!');
         }
-    }, 4000);
+    }, 2200);
     
-    // 9000ms: Dog has run off screen, now show Chapters carousel
+    // 5800ms: Show Chapters carousel while dog is still running off
     setTimeout(() => {
         const chaptersCarousel = document.getElementById('chaptersCarousel');
         if (chaptersCarousel) {
@@ -738,16 +825,30 @@ function switchToProjectsMode() {
             // Apply chapter cards adaptation
             adaptChapterCardsSize();
         }
-    }, 9000);
+    }, 5800);
     
-    // 9200ms: Show who's behind section (after cards appear)
+    // 6000ms: Show who's behind section (after cards appear)
     if (whoBehindOuterTimer) {
         clearTimeout(whoBehindOuterTimer);
     }
     whoBehindOuterTimer = setTimeout(() => {
         showWhoBehind({ delay: 0 });
         whoBehindOuterTimer = null;
-    }, 9200);
+    }, 6000);
+    
+    // 6500ms: Dog with ball reveals after buttons are fully shown
+    setTimeout(() => {
+        if (dogBallContainer) {
+            console.log('Dog with ball reveals...');
+            adaptDogBallSize(); // Apply responsive sizing
+            // Force position after a small delay to ensure it takes effect
+            setTimeout(() => {
+                adaptDogBallSize();
+                console.log('Force position update for dogball');
+            }, 100);
+            dogBallContainer.classList.add('reveal');
+        }
+    }, 6500);
 }
 
 // Switch back to home mode
@@ -767,6 +868,7 @@ function switchToHomeMode() {
     projectsView.classList.remove('active');
     if (lyingDog) lyingDog.classList.remove('slide-in');
     if (flyingBall) flyingBall.classList.remove('active');
+    if (dogBallContainer) dogBallContainer.classList.remove('reveal');
     sideOrbit.classList.remove('active');
     card3d.classList.remove('run');
     projectsGrid.classList.remove('active');
@@ -1981,6 +2083,12 @@ function showProjectsView() {
         flyingBall.classList.remove('active');
         flyingBall.style.opacity = '0';
         flyingBall.style.visibility = 'hidden';
+    }
+    
+    // Show dog with ball if returning to projects
+    if (dogBallContainer) {
+        adaptDogBallSize(); // Apply responsive sizing
+        dogBallContainer.classList.add('reveal');
     }
     
     // Hide lying dog (ball and dog animation only plays on first load)

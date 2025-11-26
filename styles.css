@@ -2149,9 +2149,9 @@ body {
 /* Lying Dog - Exact copy of landing page dog but lying down and bigger */
 .lying-dog {
     position: fixed;
-    right: -280px;
+    right: -320px;
     bottom: 10px; /* 往上移 */
-    height: 260px; /* 进一步增大尺寸 */
+    height: 300px; /* 再次增大尺寸 */
     width: auto; /* 自动宽度，不变形 */
     opacity: 0; /* Hidden by default */
     visibility: hidden; /* Hidden by default */
@@ -2172,7 +2172,7 @@ body {
 /* 狗水平移动 - 流畅匀速 */
 @keyframes dogRunHorizontal {
     0% {
-        right: -280px;
+        right: -320px;
         opacity: 0;
         visibility: hidden;
     }
@@ -2238,16 +2238,74 @@ body {
 }
 
 .lying-dog.slide-in {
-    right: -280px; /* Start off-screen to the right */
+    right: -320px; /* Start off-screen to the right */
     bottom: 10px; /* 与基础类保持一致 */
-    height: 260px; /* 进一步增大尺寸 */
+    height: 300px; /* 再次增大尺寸 */
     width: auto; /* 自动宽度，保持比例 */
     /* opacity and visibility will be controlled by animation */
     /* transform will be set by JavaScript for responsive scaling */
-    /* Dog chases ball - slower and smoother */
+    /* Dog chases ball - faster running */
     animation: 
-        dogRunHorizontal 5s linear forwards,
-        dogRunBounce 0.5s ease-in-out 0s 10;
+        dogRunHorizontal 4s linear forwards,
+        dogRunBounce 0.4s ease-in-out 0s 10;
+}
+
+/* Dog with Ball Container - slides up from bottom after UI loads */
+.dog-ball-container {
+    position: fixed;
+    /* Position controlled by JavaScript for responsiveness */
+    /* Size controlled by JavaScript for responsiveness */
+    opacity: 0;
+    visibility: hidden;
+    z-index: 4;
+    pointer-events: none;
+    /* 硬件加速优化 */
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+.dog-ball-container.reveal {
+    animation: dogBallReveal 1.2s ease-out forwards;
+}
+
+/* Dog with ball main image */
+.dog-ball {
+    /* Size controlled by JavaScript for responsiveness */
+    height: auto;
+    object-fit: contain;
+    position: relative;
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Dog ball tail */
+.dog-ball-tail {
+    position: absolute;
+    /* Size and position controlled by JavaScript for responsiveness */
+    height: auto;
+    transform-origin: 15% 85%; /* Rotation center at left-bottom */
+    z-index: 1;
+    pointer-events: none;
+    animation: tailWagSlow 2.5s ease-in-out infinite; /* Default slow wag */
+}
+
+/* Dog with ball reveals in place */
+@keyframes dogBallReveal {
+    0% {
+        opacity: 0;
+        visibility: hidden;
+        transform: scale(0.8);
+    }
+    50% {
+        opacity: 0.7;
+        visibility: visible;
+        transform: scale(1.05);
+    }
+    100% {
+        opacity: 1;
+        visibility: visible;
+        transform: scale(1);
+    }
 }
 
 /* Lying dog as GIF - no child element styles needed */
