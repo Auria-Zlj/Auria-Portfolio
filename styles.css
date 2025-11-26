@@ -2507,7 +2507,8 @@ body {
 .chapters-track {
     display: flex;
     gap: 180px;
-    padding: 0 calc(50vw - 240px); /* 移除上下padding，避免位置变化 */
+    /* 卡片宽度600px，一半是300px，padding让第一张卡片居中 */
+    padding: 0 calc(50vw - 300px);
     list-style: none;
     height: 100%;
     align-items: center;
@@ -2528,9 +2529,9 @@ body {
     transform-origin: center center;
     opacity: 1 !important;
     animation: none !important;
-    transition: none !important;
-    transform: scale(0.65) !important;
-    will-change: transform, opacity;
+    /* Anime.js handles scale transitions with spring easing - add subtle CSS transition for filter */
+    transition: filter 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform, opacity, filter;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     transform-style: preserve-3d; /* 保持3D变换空间 */
@@ -2545,7 +2546,7 @@ body {
 .chapter-card:not(.is-centered):not(:hover) {
     animation: none !important; /* 禁用浮动动画，防止上下移动 */
     animation-delay: var(--float-delay, 0s);
-    transform: scale(0.65) !important;
+    /* Scale controlled by Anime.js */
     opacity: 1 !important;
     z-index: 1;
     /* 强制固定位置 */
@@ -2564,14 +2565,14 @@ body {
 }
 
 
-/* Centered card - scale up automatically */
+/* Centered card - scale up automatically (Anime.js handles scale with spring easing) */
 .chapter-card.is-centered {
-    transform: scale(1.35) !important;
+    /* Scale controlled by Anime.js spring animation for smooth, bouncy feel */
     opacity: 1 !important;
     animation: none !important;
-    transition: none !important;
-    will-change: transform, opacity;
-    filter: brightness(1.15);
+    will-change: transform, opacity, filter;
+    /* Subtle brightness boost with smooth transition */
+    filter: brightness(1.12) drop-shadow(0 8px 24px rgba(0, 0, 0, 0.15));
 }
 
 
@@ -2591,7 +2592,6 @@ body {
     z-index: 15 !important;
     opacity: 1 !important;
     animation: none !important;
-    transition: none !important;
     animation-name: none !important;
     will-change: transform, opacity;
     /* 强制固定位置，防止hover时移动 */
@@ -2613,8 +2613,9 @@ body {
                rotateY(var(--ry, 0deg))
                rotateZ(var(--rz, 0deg))
                translateZ(var(--tz, 0px));
-    /* Smooth inertial transition for hover tilt */
-    transition: transform 0.12s cubic-bezier(0.23, 1, 0.32, 1);
+    /* Silk-smooth transition for 3D transforms - uses custom cubic-bezier for natural feel */
+    /* This curve provides smooth acceleration and gentle deceleration */
+    transition: transform 0.18s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     will-change: transform;
     /* 强制固定位置，防止3D变换导致移动 */
     top: 0 !important;
@@ -2844,30 +2845,8 @@ body {
     }
 }
 
-/* Adaptive centered card scale for smaller screens (ONLY for centered, NOT hover) */
-@media (max-width: 1024px) {
-    .chapter-card.is-centered {
-        transform: scale(1.25) !important;
-    }
-}
-
-@media (max-width: 768px) {
-    .chapter-card.is-centered {
-        transform: scale(1.20) !important;
-    }
-}
-
-@media (max-width: 480px) {
-    .chapter-card.is-centered {
-        transform: scale(1.10) !important;
-    }
-}
-
-@media (max-width: 360px) {
-    .chapter-card.is-centered {
-        transform: scale(1.05) !important;
-    }
-}
+/* Adaptive centered card scale for smaller screens - now handled by Anime.js */
+/* CSS fallback removed - Anime.js controls all scale transitions smoothly */
 
 
 .chapters .card.is-active {

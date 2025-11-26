@@ -609,13 +609,16 @@ function initChaptersWheel() {
         const targetCard = cards[index];
         const targetLeft = targetCard.offsetLeft + targetCard.offsetWidth / 2 - viewport.offsetWidth / 2;
         
-        viewport.scrollTo({
-            left: targetLeft,
-            behavior: 'smooth'
-        });
+        // Use Anime.js with easeOutQuint for silk-smooth scroll animation
+        // Duration is dynamically calculated based on distance for consistent feel
+        animateScrollTo(viewport, targetLeft);
         
         currentCardIndex = index;
-        updateCenteredCard();
+        // Update centered card after a short delay to allow animation to start
+        // The spring animation will handle the scale transition smoothly
+        setTimeout(() => {
+            updateCenteredCard();
+        }, 80);
     };
 
     let wheelAccumulator = 0;
@@ -1826,40 +1829,52 @@ function initializeCardAngles() {
 }
 
 /**
- * Spring animation for card return with overshoot
+ * Spring animation for card return with smooth overshoot using Anime.js
+ * Creates a natural, silk-like bounce effect when card returns to rest
  */
 function springReturn(card) {
     const card3d = card.querySelector('.card-3d');
-    const rz = card.dataset.rz || '0';
-    const rx = card.dataset.rx || '0';
-    const ry = card.dataset.ry || '0';
-    const tz = card.dataset.tz || '0';
+    const rz = parseFloat(card.dataset.rz) || 0;
+    const rx = parseFloat(card.dataset.rx) || 0;
+    const ry = parseFloat(card.dataset.ry) || 0;
+    const tz = parseFloat(card.dataset.tz) || 0;
     
     // Remove is-active for smooth transition
     card3d.classList.remove('is-active');
     
-    // Apply spring-like easing with overshoot
-    card3d.style.transition = 'transform 0.32s cubic-bezier(0.18, 0.9, 0.2, 1.1)';
-    
-    // Set to initial angles with slight overshoot (target + 2° then back)
-    const overshootZ = (parseFloat(rz) + (parseFloat(rz) > 0 ? 2 : -2)).toFixed(2);
-    
-    // First: overshoot (slightly past target)
-    setTimeout(() => {
-        card3d.style.setProperty('--rz', overshootZ + 'deg');
-        card3d.style.setProperty('--rx', '0deg');
-        card3d.style.setProperty('--ry', '0deg');
-        card3d.style.setProperty('--tz', '0px');
-    }, 10);
-    
-    // Then: return to normal position with random angles
-    setTimeout(() => {
-        card3d.style.transition = 'transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1)';
-        card3d.style.setProperty('--rz', rz + 'deg');
-        card3d.style.setProperty('--rx', rx + 'deg');
-        card3d.style.setProperty('--ry', ry + 'deg');
-        card3d.style.setProperty('--tz', tz + 'px');
-    }, 160);
+    // Use Anime.js for smooth spring return animation
+    // This creates a natural bounce effect with proper physics
+    anime({
+        targets: card3d,
+        rotateZ: [0, rz],
+        rotateX: [0, rx],
+        rotateY: [0, ry],
+        translateZ: [0, tz],
+        duration: 650,
+        // Spring easing for natural bounce: spring(mass, stiffness, damping, velocity)
+        // Higher damping = less bounce, lower stiffness = slower
+        easing: 'spring(1, 85, 14, 0)',
+        update: (anim) => {
+            // Update CSS custom properties for proper transform composition
+            const progress = anim.progress / 100;
+            const currentRz = rz * progress;
+            const currentRx = rx * progress;
+            const currentRy = ry * progress;
+            const currentTz = tz * progress;
+            
+            card3d.style.setProperty('--rz', currentRz.toFixed(2) + 'deg');
+            card3d.style.setProperty('--rx', currentRx.toFixed(2) + 'deg');
+            card3d.style.setProperty('--ry', currentRy.toFixed(2) + 'deg');
+            card3d.style.setProperty('--tz', currentTz.toFixed(2) + 'px');
+        },
+        complete: () => {
+            // Ensure final values are set precisely
+            card3d.style.setProperty('--rz', rz + 'deg');
+            card3d.style.setProperty('--rx', rx + 'deg');
+            card3d.style.setProperty('--ry', ry + 'deg');
+            card3d.style.setProperty('--tz', tz + 'px');
+        }
+    });
 }
 
 /**
@@ -1884,35 +1899,59 @@ function calculateTilt(e, card) {
 
 /**
  * Attaches 3D tilt and flip effects to chapter cards
+ * Uses smooth interpolation with configurable easing for silk-like feel
  */
 function attachChapterCardEffects() {
     const cards = document.querySelectorAll('.chapter-card');
     
     if (cards.length === 0) return;
     
+    // Configuration for smooth tilt animation
+    const TILT_CONFIG = {
+        // Interpolation factor: lower = smoother/slower follow, higher = more responsive
+        // 0.06 provides very smooth, silk-like following
+        followSpeed: 0.06,
+        // Minimum movement threshold to continue animation
+        threshold: 0.05,
+        // Return to center speed (slightly faster for responsive feel)
+        returnSpeed: 0.08
+    };
+    
     let targetTx = 0, targetTy = 0;
     let currentTx = 0, currentTy = 0;
     let raf = null;
+    let isReturning = false;
     
     function animate() {
-        // Smooth interpolation with easing - slow follow with strong inertia
-        currentTx += (targetTx - currentTx) * 0.08; // 0.08 = much slower follow (more inertia)
-        currentTy += (targetTy - currentTy) * 0.08;
+        // Use different interpolation speed based on state
+        const speed = isReturning ? TILT_CONFIG.returnSpeed : TILT_CONFIG.followSpeed;
         
-        // Apply to all cards
+        // Smooth interpolation with configurable easing
+        // Using exponential smoothing for natural deceleration
+        const deltaX = targetTx - currentTx;
+        const deltaY = targetTy - currentTy;
+        
+        currentTx += deltaX * speed;
+        currentTy += deltaY * speed;
+        
+        // Apply to all active cards
         cards.forEach(card => {
             const card3d = card.querySelector('.card-3d');
             if (card.classList.contains('is-active')) {
-                card3d.style.setProperty('--tx', currentTx.toFixed(2) + 'deg');
-                card3d.style.setProperty('--ty', currentTy.toFixed(2) + 'deg');
+                card3d.style.setProperty('--tx', currentTx.toFixed(3) + 'deg');
+                card3d.style.setProperty('--ty', currentTy.toFixed(3) + 'deg');
             }
         });
         
-        // Continue animation if still moving
-        if (Math.abs(targetTx - currentTx) > 0.1 || Math.abs(targetTy - currentTy) > 0.1) {
+        // Continue animation if still moving (using lower threshold for smoother stop)
+        if (Math.abs(deltaX) > TILT_CONFIG.threshold || Math.abs(deltaY) > TILT_CONFIG.threshold) {
             raf = requestAnimationFrame(animate);
         } else {
+            // Snap to final position to prevent micro-movements
+            currentTx = targetTx;
+            currentTy = targetTy;
             raf = null;
+            isReturning = false;
         }
     }
     
@@ -1923,6 +1962,7 @@ function attachChapterCardEffects() {
         
         targetTx = parseFloat(tx);
         targetTy = parseFloat(ty);
+        isReturning = false;
         
         card3d.classList.add('is-active');
         card.classList.add('is-active');
@@ -1937,16 +1977,18 @@ function attachChapterCardEffects() {
         const card = e.currentTarget;
         const card3d = card.querySelector('.card-3d');
         
-        // Smooth return to 0
+        // Smooth return to 0 with slightly faster speed
         targetTx = 0;
         targetTy = 0;
+        isReturning = true;
         
         // Start smooth animation to return to center
         if (!raf) {
             raf = requestAnimationFrame(animate);
         }
         
-        // After smooth return, apply spring return to random angle
+        // After smooth return animation completes, apply spring return to random angle
+        // Use longer timeout to ensure smooth return completes first
         setTimeout(() => {
             card3d.classList.remove('is-active');
             card.classList.remove('is-active');
@@ -1958,9 +2000,9 @@ function attachChapterCardEffects() {
                 raf = null;
             }
             
-            // Spring return to random initial angle
+            // Spring return to random initial angle with Anime.js
             springReturn(card);
-        }, 200); // Wait for smooth return animation
+        }, 280); // Longer wait for smoother transition
     }
     
     // Attach to each card
@@ -1968,22 +2010,155 @@ function attachChapterCardEffects() {
         card.addEventListener('mousemove', onMove);
         card.addEventListener('mouseleave', onLeave);
         
-        // Touch support for mobile
+        // Touch support for mobile with proper event handling
         card.addEventListener('touchmove', (e) => {
             e.preventDefault();
             const touch = e.changedTouches[0];
-            const fakeEvent = {
+            // Create a proper event-like object with currentTarget
+            onMove.call(card, {
                 clientX: touch.clientX,
-                clientY: touch.clientY
-            };
-            onMove(fakeEvent);
-        });
-        card.addEventListener('touchend', onLeave);
+                clientY: touch.clientY,
+                currentTarget: card
+            });
+        }, { passive: false });
+        card.addEventListener('touchend', (e) => onLeave.call(card, { currentTarget: card }));
     });
+}
+
+// ========================================
+// ANIME.JS CARD ANIMATION SYSTEM
+// ========================================
+
+// Store animation instances for cleanup
+let cardAnimations = new Map();
+let scrollAnimation = null;
+let previousCenteredCard = null;
+
+// Scale values for different card states
+const CARD_SCALES = {
+    normal: 0.65,
+    centered: 1.35,
+    // Responsive scales
+    centered1024: 1.25,
+    centered768: 1.20,
+    centered480: 1.10,
+    centered360: 1.05
+};
+
+// Animation configuration for smooth, silk-like transitions
+const ANIMATION_CONFIG = {
+    // Card scale animation - use spring-like easing for bouncy, natural feel
+    cardScale: {
+        duration: 600,           // Longer duration for smoother feel
+        // Spring easing: spring(mass, stiffness, damping, velocity)
+        // Lower stiffness = slower, more fluid; Higher damping = less bounce
+        easing: 'spring(1, 100, 18, 0)',  // Soft spring with minimal overshoot
+        // Alternative smooth easings for fallback
+        easingFallback: 'easeOutQuart'    // Smooth deceleration
+    },
+    // Scroll animation - smooth deceleration for natural momentum
+    scroll: {
+        duration: 650,           // Slightly longer for silk-like scroll
+        easing: 'easeOutQuint',  // Very smooth deceleration (quintic ease-out)
+        // Alternative: 'cubicBezier(0.25, 0.46, 0.45, 0.94)' for custom curve
+    },
+    // Card transition when switching centered card
+    cardSwitch: {
+        scaleUp: {
+            duration: 550,
+            easing: 'spring(1, 90, 16, 0)'  // Gentle spring for scale up
+        },
+        scaleDown: {
+            duration: 450,
+            easing: 'easeOutCubic'  // Quick but smooth scale down
+        }
+    }
+};
+
+// Get responsive centered scale based on screen width
+function getResponsiveCenteredScale() {
+    const width = window.innerWidth;
+    if (width <= 360) return CARD_SCALES.centered360;
+    if (width <= 480) return CARD_SCALES.centered480;
+    if (width <= 768) return CARD_SCALES.centered768;
+    if (width <= 1024) return CARD_SCALES.centered1024;
+    return CARD_SCALES.centered;
+}
+
+// Animate card scale using Anime.js with spring easing for silk-smooth transitions
+function animateCardScale(card, targetScale, duration = null, isScalingUp = true) {
+    // Cancel any existing animation on this card
+    const existingAnim = cardAnimations.get(card);
+    if (existingAnim) {
+        existingAnim.pause();
+    }
+    
+    // Get current scale from transform
+    const computedStyle = window.getComputedStyle(card);
+    const matrix = new DOMMatrix(computedStyle.transform);
+    const currentScale = matrix.a || CARD_SCALES.normal;
+    
+    // Select appropriate animation config based on scale direction
+    const config = isScalingUp 
+        ? ANIMATION_CONFIG.cardSwitch.scaleUp 
+        : ANIMATION_CONFIG.cardSwitch.scaleDown;
+    
+    const animDuration = duration || config.duration;
+    const animEasing = config.easing;
+    
+    // Create Anime.js animation with spring/smooth easing
+    const anim = anime({
+        targets: card,
+        scale: [currentScale, targetScale],
+        duration: animDuration,
+        easing: animEasing,
+        complete: () => {
+            cardAnimations.delete(card);
+        }
+    });
+    
+    cardAnimations.set(card, anim);
+    return anim;
+}
+
+// Animate horizontal scroll using Anime.js with smooth easing for silk-like feel
+function animateScrollTo(viewport, targetScrollLeft, duration = null) {
+    // Cancel any existing scroll animation
+    if (scrollAnimation) {
+        scrollAnimation.pause();
+    }
+    
+    const currentScrollLeft = viewport.scrollLeft;
+    const scrollDistance = Math.abs(targetScrollLeft - currentScrollLeft);
+    
+    // Dynamic duration based on scroll distance for consistent feel
+    // Minimum 400ms, scales up with distance, max 800ms
+    const dynamicDuration = duration || Math.min(800, Math.max(400, scrollDistance * 0.8));
+    
+    // Create scroll animation object
+    const scrollObj = { scrollLeft: currentScrollLeft };
+    
+    scrollAnimation = anime({
+        targets: scrollObj,
+        scrollLeft: targetScrollLeft,
+        duration: dynamicDuration,
+        easing: ANIMATION_CONFIG.scroll.easing,
+        update: () => {
+            viewport.scrollLeft = scrollObj.scrollLeft;
+        },
+        complete: () => {
+            scrollAnimation = null;
+        }
+    });
+    
+    return scrollAnimation;
 }
 
 // Function to detect which card is centered with throttling
 let rafId = null;
+let lastCenteredCardChange = 0;
+const CARD_CHANGE_DEBOUNCE = 100; // Minimum ms between card changes to prevent jitter
+
 function updateCenteredCard() {
     if (rafId) cancelAnimationFrame(rafId);
     
@@ -2002,9 +2177,6 @@ function updateCenteredCard() {
             const cardCenter = card.offsetLeft + card.offsetWidth / 2;
             const distance = Math.abs(cardCenter - viewportCenter);
             
-            // Remove centered from all first
-            card.classList.remove('is-centered');
-            
             // Track closest card
             if (distance < closestDistance) {
                 closestDistance = distance;
@@ -2014,20 +2186,76 @@ function updateCenteredCard() {
         
         // Only mark the closest card as centered (only if within reasonable distance)
         if (closestCard && closestDistance < 240) { // Half of card width
-            closestCard.classList.add('is-centered');
+            // Check if the centered card changed
+            if (previousCenteredCard !== closestCard) {
+                // Debounce rapid card changes to prevent animation jitter
+                const now = Date.now();
+                if (now - lastCenteredCardChange < CARD_CHANGE_DEBOUNCE) {
+                    rafId = null;
+                    return;
+                }
+                lastCenteredCardChange = now;
+                
+                // Animate previous centered card to normal scale (scale down)
+                if (previousCenteredCard) {
+                    previousCenteredCard.classList.remove('is-centered');
+                    // Use scale-down animation config (faster, smooth ease-out)
+                    animateCardScale(previousCenteredCard, CARD_SCALES.normal, null, false);
+                }
+                
+                // Animate new centered card to larger scale (scale up with spring)
+                closestCard.classList.add('is-centered');
+                // Use scale-up animation config (spring easing for bouncy feel)
+                animateCardScale(closestCard, getResponsiveCenteredScale(), null, true);
+                
+                previousCenteredCard = closestCard;
+            }
+        } else {
+            // No card is centered, scale down previous centered card
+            if (previousCenteredCard) {
+                previousCenteredCard.classList.remove('is-centered');
+                animateCardScale(previousCenteredCard, CARD_SCALES.normal, null, false);
+                previousCenteredCard = null;
+            }
         }
+        
+        // Update all other cards to normal scale (for initial state)
+        cards.forEach(card => {
+            if (card !== closestCard && card !== previousCenteredCard) {
+                // Set initial scale if not already set
+                const computedStyle = window.getComputedStyle(card);
+                const matrix = new DOMMatrix(computedStyle.transform);
+                const currentScale = matrix.a;
+                
+                if (!currentScale || Math.abs(currentScale - CARD_SCALES.normal) > 0.1) {
+                    card.style.transform = `scale(${CARD_SCALES.normal})`;
+                }
+            }
+        });
         
         rafId = null;
     });
 }
 
+// Initialize card scales using Anime.js
+function initializeCardScales() {
+    const cards = document.querySelectorAll('.chapter-card');
+    cards.forEach(card => {
+        // Set initial scale to normal
+        card.style.transform = `scale(${CARD_SCALES.normal})`;
+    });
+    console.log(`Initialized ${cards.length} card scales to ${CARD_SCALES.normal}`);
+}
+
 // Initialize immediately when script loads
 initializeCardAngles();
+initializeCardScales();
 
 // Attach effects when carousel becomes active
 setTimeout(() => {
-    // Re-initialize angles when carousel appears
+    // Re-initialize angles and scales when carousel appears
     initializeCardAngles();
+    initializeCardScales();
     attachChapterCardEffects();
     
     // Center detection for auto-scaling centered card
@@ -2046,7 +2274,10 @@ setTimeout(() => {
             }
         }, { passive: true });
         
-        updateCenteredCard(); // Initial check
+        // Initial centered card detection with Anime.js animation
+        setTimeout(() => {
+            updateCenteredCard();
+        }, 100);
     }
 }, 4500);
 
