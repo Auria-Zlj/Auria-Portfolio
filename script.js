@@ -595,7 +595,7 @@ let chaptersWheelInitialized = false;
 function initChaptersWheel() {
     if (chaptersWheelInitialized) return;
 
-    const viewport = document.querySelector('.chapters-viewport');
+    const viewport = document.querySelector('.chapters-scroll');
     const chapters = document.querySelector('.chapters');
     if (!viewport || !chapters) return;
 
@@ -1989,7 +1989,7 @@ function updateCenteredCard() {
     
     rafId = requestAnimationFrame(() => {
         const cards = document.querySelectorAll('.chapter-card');
-        const viewport = document.querySelector('.chapters-viewport');
+        const viewport = document.querySelector('.chapters-scroll');
         if (!viewport || cards.length === 0) return;
         
         const viewportCenter = viewport.scrollLeft + viewport.clientWidth / 2;
@@ -2031,7 +2031,7 @@ setTimeout(() => {
     attachChapterCardEffects();
     
     // Center detection for auto-scaling centered card
-    const viewport = document.querySelector('.chapters-viewport');
+    const viewport = document.querySelector('.chapters-scroll');
     if (viewport) {
         let isUpdating = false;
         

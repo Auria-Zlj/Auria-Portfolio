@@ -2416,19 +2416,26 @@ body {
     position: relative;
     width: 100%;
     height: 100%;
+    overflow: visible; /* Allow hovering cards to render fully */
+    pointer-events: auto;
+}
+
+.chapters-scroll {
+    position: relative;
+    width: 100%;
+    height: 100%;
     overflow-x: auto;
-    overflow-y: visible; /* 确保垂直方向不裁剪 */
+    overflow-y: hidden;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
     cursor: grab;
-    transform-style: preserve-3d; /* 保持3D变换空间 */
-    /* Hide scrollbar */
+    transform-style: preserve-3d; /* Keep 3D transforms intact */
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
 }
 
-.chapters-viewport::-webkit-scrollbar {
+.chapters-scroll::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Opera */
 }
 
@@ -2493,7 +2500,7 @@ body {
     transform: translateY(0);
 }
 
-.chapters-viewport:active {
+.chapters-scroll:active {
     cursor: grabbing;
 }
 
@@ -3172,7 +3179,7 @@ body {
     .chapters .card {
         transition: none;
     }
-    .chapters-viewport {
+    .chapters-scroll {
         scroll-behavior: auto;
     }
 }
